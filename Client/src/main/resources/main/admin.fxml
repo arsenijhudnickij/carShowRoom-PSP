@@ -1,0 +1,135 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import de.jensd.fx.glyphs.fontawesome.FontAwesomeIcon?>
+<?import java.lang.String?>
+<?import javafx.collections.FXCollections?>
+<?import javafx.scene.Cursor?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.text.Font?>
+
+<AnchorPane prefHeight="740.0" prefWidth="1385.0" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.AdminPageController">
+   <children>
+      <AnchorPane prefHeight="90.0" prefWidth="1385.0" style="-fx-background-color: #282828;">
+         <children>
+            <Label layoutX="100.0" prefHeight="69.0" prefWidth="152.0" text="DEALS" textFill="WHITE">
+               <font>
+                  <Font name="System Bold Italic" size="47.0" />
+               </font>
+            </Label>
+            <Label layoutX="252.0" layoutY="23.0" prefHeight="69.0" prefWidth="152.0" text="DRIVE" textFill="WHITE">
+               <font>
+                  <Font name="System Bold Italic" size="47.0" />
+               </font>
+            </Label>
+            <ImageView fitHeight="75.0" fitWidth="78.0" layoutX="8.0" layoutY="8.0" pickOnBounds="true" preserveRatio="true">
+               <image>
+                  <Image url="@../com/secondEmblem.jpg" />
+               </image>
+            </ImageView>
+            <ComboBox fx:id="checkCar" layoutX="662.0" layoutY="20.0" prefHeight="52.0" prefWidth="377.0" promptText="Просмотр автомобилей" style="-fx-background-color: #282828;" stylesheets="@style.css" visibleRowCount="4">
+               <cursor>
+                  <Cursor fx:constant="HAND" />
+               </cursor>
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="Просмотр всех автомобилей" />
+                     <String fx:value="От самого дешевого к самому дорогому" />
+                     <String fx:value="От самого дорогого к самому дешевому" />
+                  </FXCollections>
+               </items>
+            </ComboBox>
+            <Button fx:id="aboutUs" layoutX="461.0" layoutY="24.0" mnemonicParsing="false" prefHeight="44.0" prefWidth="139.0" style="-fx-background-color: #282828; -fx-cursor: HAND;" text="About Us" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="20.0" />
+               </font>
+            </Button>
+            <ComboBox fx:id="profile" layoutX="1123.0" layoutY="24.0" prefHeight="44.0" prefWidth="202.0" promptText="Профиль" style="-fx-background-color: #282828;" stylesheets="@style.css">
+               <items>
+                  <FXCollections fx:factory="observableArrayList">
+                     <String fx:value="Мой профиль" />
+                     <String fx:value="Выход" />
+                  </FXCollections>
+               </items>
+            </ComboBox>
+            <FontAwesomeIcon fill="WHITE" glyphName="USER" layoutX="1238.0" layoutY="63.0" size="4em">
+               <font>
+                  <Font size="58.0" />
+               </font>
+            </FontAwesomeIcon>
+         </children>
+      </AnchorPane>
+      <AnchorPane layoutY="90.0" prefHeight="651.0" prefWidth="90.0" style="-fx-background-color: #282828;">
+         <children>
+            <HBox fx:id="addCar" layoutX="12.0" layoutY="77.0" prefHeight="69.0" prefWidth="69.0" style="-fx-cursor: HAND;">
+               <children>
+                  <FontAwesomeIcon fill="WHITE" glyphName="CAR" size="5em" />
+               </children>
+            </HBox>
+
+            <HBox fx:id="giveRole" layoutX="1.0" layoutY="236.0" prefHeight="60.0" prefWidth="69.0">
+               <children>
+                  <ImageView fitHeight="108.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: HAND;">
+                     <image>
+                        <Image url="@../com/трудоустройство.jpg" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+
+            <HBox fx:id="deleteWorker" layoutX="1.0" layoutY="410.0" prefHeight="90.0" prefWidth="90.0" style="-fx-cursor: HAND;" styleClass="">
+               <children>
+                  <ImageView fitHeight="108.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true" style="-fx-cursor: HAND;">
+                     <image>
+                        <Image url="@../com/увольнение.jpg" />
+                     </image>
+                  </ImageView>
+               </children>
+            </HBox>
+            <Label layoutX="6.0" layoutY="137.0" text="добавление " textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="32.0" layoutY="156.0" text="авто" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="22.0" layoutY="317.0" text="выдача" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="29.0" layoutY="336.0" text="роли" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="7.0" layoutY="500.0" text="увольнение " textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+            <Label layoutX="9.0" layoutY="519.0" text="сотрудника" textFill="WHITE">
+               <font>
+                  <Font name="System Bold" size="13.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+      <AnchorPane fx:id="startPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" style="-fx-background-color: #FFFFFF;" stylesheets="@style.css">
+         <children>
+            <Label alignment="CENTER" layoutX="50.0" layoutY="20.0" prefWidth="1195.0" styleClass="header" text="Добро пожаловать в панель администратора" textFill="#000000" />
+            <Label layoutX="50.0" layoutY="80.0" styleClass="paragraph" text="Эта панель позволяет вам управлять всеми аспектами системы. Администраторская панель является важным инструментом, так как она обеспечивает полный контроль над данными системы, упрощает управление процессами и ускоряет принятие решений." textFill="#000000" wrapText="true" />
+            <Label layoutX="50.0" layoutY="140.0" styleClass="paragraph" text="Это важно, потому что эффективное управление данными помогает поддерживать порядок, улучшает пользовательский опыт и увеличивает продуктивность. На картинке представлены элементы панели администратора: слева находится боковое меню с иконками, а в центре отображается приветственное сообщение с инструкциями." textFill="#000000" wrapText="true" />
+            <Label layoutX="50.0" layoutY="200.0" styleClass="paragraph" text="Вы можете добавлять, редактировать и удалять данные, а также просматривать статистику. В боковом меню доступны следующие функции: добавление автомобиля для учета данных, выдача роли для назначения задач сотрудникам, и увольнение сотрудника для завершения его работы в системе." textFill="#000000" wrapText="true" />
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="addCarPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false" />
+   </children>
+</AnchorPane>

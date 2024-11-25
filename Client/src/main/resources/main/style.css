@@ -1,0 +1,45 @@
+.combo-box {
+    -fx-font-size: 25px; /* Размер текста */
+    -fx-font-weight: normal; /* Обычный шрифт для текста-заполнителя */
+    -fx-text-fill: white; /* Цвет текста */
+    -fx-background-color: #282828; /* Фон ComboBox */
+}
+
+.combo-box .list-cell {
+    -fx-text-fill: white; /* Цвет текста */
+    -fx-font-size: 20px; /* Размер текста */
+    -fx-font-weight: bold; /* Жирный текст для элементов списка */
+    -fx-background-color: #282828; /* Цвет фона */
+}
+
+.combo-box .list-view {
+    -fx-background-color: #282828; /* Цвет фона выпадающего списка */
+}
+
+.combo-box .arrow {
+    -fx-background-color: gray; /* Цвет стрелки */
+}
+
+.header {
+    -fx-font-size: 32px; /* Увеличенный размер текста заголовка */
+    -fx-font-weight: bold;
+    -fx-text-fill: #282828;
+    -fx-padding: 10px 0;
+    -fx-alignment: CENTER; /* Центрирование текста */
+}
+
+.paragraph {
+    -fx-font-size: 18px; /* Увеличенный размер текста для параграфов */
+    -fx-text-fill: #282828;
+    -fx-line-spacing: 4px; /* Межстрочный интервал */
+    -fx-padding: 10px 0; /* Отступы сверху и снизу */
+    -fx-pref-width: 1195px; /* Ширина параграфов */
+}
+
+.list-cell:hover,.button:hover,.combo-box:hover{
+    -fx-cursor: hand; /* Курсор "рука" */
+}
+
+.custom-hbox {
+    -fx-cursor: hand;
+}
