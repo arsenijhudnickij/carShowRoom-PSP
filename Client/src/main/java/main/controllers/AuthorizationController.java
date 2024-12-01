@@ -1,6 +1,8 @@
 package main.controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Scene;
@@ -12,10 +14,13 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-
+import main.models.entities.Session;
 import main.enums.RequestType;
 import main.enums.ResponseStatus;
+import main.models.entities.Admin;
 import main.models.entities.Person;
+import main.models.entities.Role;
+import main.models.entities.User;
 import main.models.tcp.Request;
 import main.models.tcp.Response;
 import main.utility.ClientSocket;
@@ -103,30 +108,43 @@ public class AuthorizationController {
             String hashedPassword = hashPassword(password);
             Person person = new Person(login, hashedPassword);
 
-            Response response = loginPerson(person);
-            if (response != null && response.getResponseStatus() == ResponseStatus.OK) {
-                Number roleIdNumber = (Number) response.getData();
-                Integer roleId = roleIdNumber.intValue();
-                System.out.println("Successful login, role_id: " + roleId);
-                clearFields();
-                Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
-                successAlert.setTitle("Успешная авторизация");
-                successAlert.setHeaderText(null);
-                successAlert.setContentText("Пользователь успешно авторизован!");
-                successAlert.showAndWait();
-                switch (roleId) {
-                    case 1:
-                        openWindow("user.fxml", "DEALS DRIVE");
-                        break;
-                    case 2:
-                        openWindow("worker.fxml", "DEALS DRIVE");
-                        break;
-                    case 3:
-                        openWindow("admin.fxml", "DEALS DRIVE");
-                        break;
-                    default:
-                        System.out.println("Неизвестная роль: " + roleId);
-                        break;
+            Object userOrAdmin = loginPerson(person);
+            if (userOrAdmin != null) {
+                Integer roleId = null;
+
+                if (userOrAdmin instanceof User) {
+                    User user = (User) userOrAdmin;
+                    roleId = user.getPerson().getRole().getRoleId();
+                    System.out.println("Logged in as User, role_id: " + roleId);
+                    Session.setUser(user);
+                } else if (userOrAdmin instanceof Admin) {
+                    Admin admin = (Admin) userOrAdmin;
+                    roleId = admin.getPerson().getRole().getRoleId();
+                    System.out.println("Logged in as Admin, role_id: " + roleId);
+                    Session.setAdmin(admin);
+                }
+
+                if (roleId != null) {
+                    clearFields();
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Успешная авторизация");
+                    successAlert.setHeaderText(null);
+                    successAlert.setContentText("Пользователь успешно авторизован!");
+                    successAlert.showAndWait();
+                    switch (roleId) {
+                        case 1:
+                            openWindow("user.fxml", "DEALS DRIVE");
+                            break;
+                        case 2:
+                            openWindow("worker.fxml", "DEALS DRIVE");
+                            break;
+                        case 3:
+                            openWindow("admin.fxml", "DEALS DRIVE");
+                            break;
+                        default:
+                            System.out.println("Неизвестная роль: " + roleId);
+                            break;
+                    }
                 }
             } else {
                 Alert errorAlert = new Alert(Alert.AlertType.ERROR);
@@ -167,7 +185,7 @@ public class AuthorizationController {
         passRepField.clear();
     }
 
-    private Response loginPerson(Person person) {
+    private Object loginPerson(Person person) {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(person));
         request.setRequestType(RequestType.LOGIN);
@@ -179,13 +197,29 @@ public class AuthorizationController {
             String responseJson = ClientSocket.getInstance().getIn().readLine();
             if (responseJson != null) {
                 System.out.println("Response from server: " + responseJson);
-                return new Gson().fromJson(responseJson, Response.class);
+
+                Response response = new Gson().fromJson(responseJson, Response.class);
+                if (response.getResponseStatus() == ResponseStatus.OK) {
+                    JsonObject responseJsonObject = JsonParser.parseString(responseJson).getAsJsonObject();
+                    JsonObject dataObject = responseJsonObject.getAsJsonObject("data");
+
+                    if (dataObject != null) {
+                        if (dataObject.has("userId")) {
+                            return new Gson().fromJson(dataObject, User.class);
+                        } else if (dataObject.has("id")) {
+                            return new Gson().fromJson(dataObject, Admin.class);
+                        }
+                    }
+                } else {
+                    System.out.println("Error: " + response.getData());
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
         return null;
     }
+
 
     private void openWindow(String fxmlFile, String windowTitle) {
         try {
@@ -197,7 +231,7 @@ public class AuthorizationController {
     }
     private void openRegistrationWindow() {
         try {
-            SceneSwitcher.switchScene("registration.fxml", regLink, 650, 400,"Registration");
+            SceneSwitcher.switchSceneStart("registration.fxml", regLink, "Registration");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Не удалось загрузить файл registration.fxml");

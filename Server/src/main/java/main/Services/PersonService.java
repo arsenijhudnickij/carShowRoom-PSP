@@ -2,8 +2,10 @@ package main.Services;
 
 import main.DAO.PersonDAO;
 import main.Interfaces.Service;
+import main.Models.Entities.Admin;
 import main.Models.Entities.CarType;
 import main.Models.Entities.Person;
+import main.Models.Entities.User;
 import main.exception.ShowException;
 import org.hibernate.HibernateError;
 
@@ -59,13 +61,35 @@ public class PersonService implements Service {
         }
         return persons;
     }
-    public Integer findRoleIdByLoginAndPassword(Person person1) {
+    public Person findByLoginAndPassword(Person person1) {
         String login = person1.getLogin();
         String password = person1.getPassword();
-        Person person = personDAO.findByLoginAndPassword(login, password);
-        if (person != null) {
-            return person.getRole().getRoleId();
+        return personDAO.findByLoginAndPassword(login, password);
+    }
+
+    public Object findUserOrAdmin(Person person) {
+        User user = personDAO.findUserByPersonId(person.getPersonId());
+        if (user != null) {
+            return user;
+        }
+        Admin admin = personDAO.findAdminByPersonId(person.getPersonId());
+        if (admin != null) {
+            return admin;
         }
         return null;
+    }
+    public void updateRoles(List<Integer> personIds) {
+        try {
+            personDAO.updateRoles(personIds);
+        } catch (HibernateError e) {
+            ShowException.showNotice(e);
+        }
+    }
+    public void deleteWorkers(List<Integer> personIds) {
+        try {
+            personDAO.deleteWorkers(personIds);
+        } catch (HibernateError e) {
+            ShowException.showNotice(e);
+        }
     }
 }

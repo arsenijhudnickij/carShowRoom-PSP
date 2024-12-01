@@ -24,6 +24,7 @@ import main.enums.ResponseStatus;
 import main.enums.RoleName;
 import main.models.entities.Person;
 import main.models.entities.Role;
+import main.models.entities.Session;
 import main.models.entities.User;
 import main.models.tcp.Request;
 import main.models.tcp.Response;
@@ -176,12 +177,13 @@ public class RegistrationController {
             int checker = checkPersonExists(person);
             if ( checker >= 0) {
                 person.setPersonId(checker);
-                String hashedPassportNum = hashPassword(passportNum);
-                User user = new User(fio, hashedPassportNum, birthDate, birthMonth, birthYear, person);
-                boolean isRegistered = sendUserToServer(user);
+                User user = new User(fio, passportNum, birthDate, birthMonth, birthYear, person);
+                User registeredUser = sendUserToServer(user);
                 clearFields();
 
-                if (isRegistered) {
+                if (registeredUser != null) {
+                    Session.setUser(registeredUser);
+
                     String roleName = user.getPerson().getRole().getRoleName().name();
 
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -253,7 +255,7 @@ public class RegistrationController {
     }
     private void openAuthorizationWindow() {
         try {
-            SceneSwitcher.switchScene("authorization.fxml", authLink, 650, 400,"Authorization");
+            SceneSwitcher.switchSceneStart("authorization.fxml", authLink, "Authorization");
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Не удалось загрузить authorization.fxml");
@@ -263,7 +265,8 @@ public class RegistrationController {
     private int checkPersonExists(Person person) {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(person));
-        request.setRequestType(RequestType.CHECK_PERSON);
+        request.setRequestType(
+                RequestType.CHECK_PERSON);
 
         try {
             ClientSocket.getInstance().getOut().println(new Gson().toJson(request));
@@ -314,7 +317,7 @@ public class RegistrationController {
             throw new RuntimeException("Ошибка при хешировании пароля", e);
         }
     }
-    private boolean sendUserToServer(User user) {
+    private User sendUserToServer(User user) {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(user));
         request.setRequestType(RequestType.SIGNUP);
@@ -328,12 +331,13 @@ public class RegistrationController {
             if (serverResponse != null) {
                 System.out.println("Response from server: " + serverResponse);
                 Response response = new Gson().fromJson(serverResponse, Response.class);
-                return response.getResponseStatus() == ResponseStatus.OK;
+                if (response.getResponseStatus() == ResponseStatus.OK) {
+                    return new Gson().fromJson(new Gson().toJson(response.getData()), User.class);
+                }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
-
-        return false;
+        return null;
     }
 }

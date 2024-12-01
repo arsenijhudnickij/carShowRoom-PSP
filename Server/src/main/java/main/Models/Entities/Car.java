@@ -14,24 +14,12 @@ public class Car {
     @Column(name = "high_speed", nullable = false)
     private int highSpeed;
 
-    @Column(name = "acceleration", nullable = false)
-    private double acceleration;
-
-    @Column(name = "engine_displacement", nullable = false)
-    private double engineDisplacement;
-
-    @ManyToOne(fetch = FetchType.LAZY, optional = false)
+    @ManyToOne(fetch = FetchType.EAGER, optional = false)
     @JoinColumn(name = "car_type_id", nullable = false)
     private CarType carType;
 
     @Column(name = "petrol_type", nullable = false)
     private String petrolType;
-
-    @Column(name = "is_used", nullable = false)
-    private boolean used;
-
-    @Column(name = "mileage", nullable = false)
-    private int mileage;
 
     @Column(name = "power", nullable = false)
     private int power;
@@ -42,23 +30,22 @@ public class Car {
     @Column(name = "cost", nullable = false)
     private double cost;
 
+    @Column(name = "image_path", nullable = false)
+    private String imagePath;
     public Car() {
     }
 
-    public Car(int carId, int highSpeed, double acceleration, double engineDisplacement,
-               CarType carType, String petrolType, boolean used, int mileage, int power,
-               String brand, double cost) {
+    public Car(int carId, int highSpeed,
+               CarType carType, String petrolType, int power,
+               String brand, double cost, String imagePath) {
         this.carId = carId;
         this.highSpeed = highSpeed;
-        this.acceleration = acceleration;
-        this.engineDisplacement = engineDisplacement;
         this.carType = carType;
         this.petrolType = petrolType;
-        this.used = used;
-        this.mileage = mileage;
         this.power = power;
         this.brand = brand;
         this.cost = cost;
+        this.imagePath = imagePath;
     }
 
     public int getCarId() {
@@ -77,22 +64,6 @@ public class Car {
         this.highSpeed = highSpeed;
     }
 
-    public double getAcceleration() {
-        return acceleration;
-    }
-
-    public void setAcceleration(double acceleration) {
-        this.acceleration = acceleration;
-    }
-
-    public double getEngineDisplacement() {
-        return engineDisplacement;
-    }
-
-    public void setEngineDisplacement(double engineDisplacement) {
-        this.engineDisplacement = engineDisplacement;
-    }
-
     public CarType getCarType() {
         return carType;
     }
@@ -107,22 +78,6 @@ public class Car {
 
     public void setPetrolType(String petrolType) {
         this.petrolType = petrolType;
-    }
-
-    public boolean isUsed() {
-        return used;
-    }
-
-    public void setUsed(boolean used) {
-        this.used = used;
-    }
-
-    public int getMileage() {
-        return mileage;
-    }
-
-    public void setMileage(int mileage) {
-        this.mileage = mileage;
     }
 
     public int getPower() {
@@ -147,5 +102,13 @@ public class Car {
 
     public void setCost(double cost) {
         this.cost = cost;
+    }
+
+    public String getImagePath() {
+        return imagePath;
+    }
+
+    public void setImagePath(String imagePath) {
+        this.imagePath = imagePath;
     }
 }

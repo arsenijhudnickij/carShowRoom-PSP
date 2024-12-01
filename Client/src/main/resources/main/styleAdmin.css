@@ -1,0 +1,40 @@
+.table-view {
+    -fx-background-color: #282828; /* Цвет фона таблицы */
+    -fx-border-color: white; /* Цвет границы таблицы */
+    -fx-border-width: 1; /* Ширина границы таблицы */
+}
+
+.table-view .column-header {
+    -fx-background-color: #282828; /* Цвет фона заголовка колонок */
+    -fx-text-fill: white; /* Цвет текста заголовка */
+    -fx-font-weight: bold; /* Жирный текст заголовка */
+    -fx-border-color: white; /* Цвет границы заголовка */
+    -fx-font-size: 20px;
+    -fx-border-width: 0 1px 1px 0; /* Правую границу заголовка */
+}
+
+.table-view .table-cell {
+    -fx-background-color: #282828; /* Цвет фона ячеек */
+    -fx-text-fill: white; /* Цвет текста ячеек */
+    -fx-font-weight: bold; /* Жирный текст ячеек */
+    -fx-border-color: white; /* Цвет границы ячейки */
+    -fx-border-width: 0 1px 0 0; /* Правую границу ячейки */
+}
+
+.table-view .table-row-cell {
+    -fx-border-color: white; /* Цвет границ ячеек */
+    -fx-border-width: 0 0 1 0; /* Нижняя граница ячейки */
+}
+.table-view .column-header {
+    -fx-background-color: #282828;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white; /* Цвет текста заголовка через label */
+}
+.table-cell {
+    -fx-alignment: CENTER; /* Центрирование текста и содержимого ячеек */
+}
+

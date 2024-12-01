@@ -26,7 +26,7 @@ public class User {
     @Column(name = "birth_year")
     private int birthYear;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "person_id" , nullable = false)
     private Person person;
 

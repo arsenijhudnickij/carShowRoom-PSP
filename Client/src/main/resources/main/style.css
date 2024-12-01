@@ -25,7 +25,7 @@
     -fx-font-weight: bold;
     -fx-text-fill: #282828;
     -fx-padding: 10px 0;
-    -fx-alignment: CENTER; /* Центрирование текста */
+    -fx-alignment: CENTER;
 }
 
 .paragraph {

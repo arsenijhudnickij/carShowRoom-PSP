@@ -17,7 +17,7 @@ public class Person {
     @Column(name = "password", length = 256)
     private String password;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "role_id")
     private Role role;
 
