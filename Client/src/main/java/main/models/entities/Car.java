@@ -6,7 +6,7 @@ public class Car {
     private CarType carType;
     private String petrolType;
     private int power;
-    private String brand;
+    private String name;
     private double cost;
     private String imagePath;
     public Car() {
@@ -14,13 +14,24 @@ public class Car {
 
     public Car(int carId, int highSpeed,
                CarType carType, String petrolType, int power,
-               String brand, double cost, String imagePath) {
+               String name, double cost, String imagePath) {
         this.carId = carId;
         this.highSpeed = highSpeed;
         this.carType = carType;
         this.petrolType = petrolType;
         this.power = power;
-        this.brand = brand;
+        this.name = name;
+        this.cost = cost;
+        this.imagePath = imagePath;
+    }
+    public Car(int highSpeed,
+               CarType carType, String petrolType, int power,
+               String name, double cost, String imagePath) {
+        this.highSpeed = highSpeed;
+        this.carType = carType;
+        this.petrolType = petrolType;
+        this.power = power;
+        this.name = name;
         this.cost = cost;
         this.imagePath = imagePath;
     }
@@ -65,12 +76,12 @@ public class Car {
         this.power = power;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getName() {
+        return name;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setBrand(String name) {
+        this.name = name;
     }
 
     public double getCost() {

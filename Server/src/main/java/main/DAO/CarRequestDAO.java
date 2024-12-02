@@ -38,6 +38,15 @@ public class CarRequestDAO implements DAO<CarRequest>{
             tx.commit();
         }
     }
+    public void deleteByCarId(int carId) {
+        try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.createQuery("DELETE FROM CarRequest WHERE car.carId = :carId")
+                    .setParameter("carId", carId)
+                    .executeUpdate();
+            tx.commit();
+        }
+    }
 
     @Override
     public CarRequest findById(int id) {

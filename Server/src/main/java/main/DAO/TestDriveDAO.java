@@ -1,6 +1,7 @@
 package main.DAO;
 
 import main.Interfaces.DAO;
+import main.Models.Entities.Car;
 import main.Models.Entities.TestDrive;
 import main.Utility.HibernateSessionFactory;
 import org.hibernate.Session;
@@ -36,6 +37,23 @@ public class TestDriveDAO implements DAO<TestDrive> {
             Transaction tx = session.beginTransaction();
             session.delete(obj);
             tx.commit();
+        }
+    }
+    public void deleteByCarId(int carId) {
+        Transaction tx = null;
+        try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+            tx = session.beginTransaction();
+
+            session.createQuery("DELETE FROM TestDrive WHERE car = :car")
+                    .setParameter("car", new Car(carId))
+                    .executeUpdate();
+
+            tx.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
+            if (tx != null) {
+                tx.rollback();
+            }
         }
     }
 

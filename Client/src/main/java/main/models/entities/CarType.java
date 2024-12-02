@@ -11,6 +11,9 @@ public class CarType {
         this.idType = idType;
         this.typeName = typeName;
     }
+    public CarType(String typeName) {
+        this.typeName = typeName;
+    }
 
     public int getIdType() {
         return idType;

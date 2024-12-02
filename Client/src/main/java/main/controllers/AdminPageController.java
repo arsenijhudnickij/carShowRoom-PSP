@@ -8,19 +8,20 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
-import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.AnchorPane;
 import javafx.scene.layout.HBox;
+import javafx.stage.FileChooser;
 import main.enums.RequestType;
 import main.enums.ResponseStatus;
-import main.models.entities.Admin;
-import main.models.entities.Session;
-import main.models.entities.User;
+import main.models.entities.*;
+import main.models.factories.CarCellFactory;
+import main.models.factories.CarCellFactoryImpl;
 import main.models.tcp.Request;
 import main.models.tcp.Response;
 import main.utility.ClientSocket;
 import main.utility.SceneSwitcher;
 
+import java.io.File;
 import java.io.IOException;
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -29,6 +30,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import static main.enums.RequestType.ADD_CAR;
+import static main.enums.RequestType.DELETE_CAR;
+
 public class AdminPageController {
     @FXML
     private HBox addCar;
@@ -36,6 +40,8 @@ public class AdminPageController {
     private HBox giveRole;
     @FXML
     private HBox deleteWorker;
+    @FXML
+    private HBox deleteCar;
     @FXML
     private ComboBox<String> checkCar;
     @FXML
@@ -49,7 +55,11 @@ public class AdminPageController {
     @FXML
     private AnchorPane startPanel;
     @FXML
+    private AnchorPane deleteCarsPanel;
+    @FXML
     private AnchorPane addCarPanel;
+    @FXML
+    private AnchorPane addCarForm;
     @FXML
     private AnchorPane giveRolePanel;
     @FXML
@@ -100,9 +110,42 @@ public class AdminPageController {
     private TableColumn<User, CheckBox> checkboxColumnWorker;
     @FXML
     private Button deleteWorkers;
+    @FXML
+    private Button selectFileButton;
+    @FXML
+    private Button addCarToSystem;
+    @FXML
+    private TextField brand;
+    @FXML
+    private TextField power;
+    @FXML
+    private TextField cost;
+    @FXML
+    private TextField maxSpeed;
+    @FXML
+    private ComboBox<String> petrolType;
+    @FXML
+    private ComboBox<String> carType;
+    @FXML
+    private TableView<Car> deleteCarsTable;
+    @FXML
+    private TableColumn<Car, String> carNameColumn;
+    @FXML
+    private TableColumn<Car, String> carTypeColumn;
+    @FXML
+    private TableColumn<Car, Double> maxSpeedColumn;
+    @FXML
+    private TableColumn<Car, String> petrolTypeColumn;
+    @FXML
+    private TableColumn<Car, Integer> carPowerColumn;
+    @FXML
+    private TableColumn<Car, Double> carCostColumn;
+    @FXML
+    private TableColumn<Car, Void> delButtonColumnCar;
 
     private Map<User, Boolean> userSelectionMap = new HashMap<>();
     private Map<User, Boolean> workerSelectionMap = new HashMap<>();
+    private String selectedFilePath;
 
     @FXML
     public void initialize() {
@@ -150,6 +193,8 @@ public class AdminPageController {
 
         initHandlers();
         initProfileHandler();
+        initializeDeleteCarsTable();
+        selectFileButton.setOnAction(event -> openFileChooser());
 
         surnameColumnWorker.setCellValueFactory(cellData -> {
             String fullName = cellData.getValue().getName();
@@ -201,6 +246,9 @@ public class AdminPageController {
         aboutUs.setOnMouseClicked(event -> handleAboutUs());
         sendNewRoles.setOnMouseClicked(event -> saveRolesOnServer( userSelectionMap));
         deleteWorkers.setOnMouseClicked(event -> deleteWorkersOnServer( workerSelectionMap));
+        deleteCar.setOnMouseClicked(event -> handleAboutUs());
+        addCarToSystem.setOnMouseClicked(event -> handleAddCarToSystem());
+        deleteCar.setOnMouseClicked(event ->  handleDeleteCarFromSystem());
     }
 
     private void initProfileHandler() {
@@ -216,6 +264,70 @@ public class AdminPageController {
         });
     }
 
+    private void initializeDeleteCarsTable() {
+        CarCellFactory carCellFactory = new CarCellFactoryImpl();
+        carNameColumn.setCellValueFactory(cellData ->
+                carCellFactory.createNameProperty(cellData.getValue()));
+
+        carTypeColumn.setCellValueFactory(cellData ->
+                carCellFactory.createTypeProperty(cellData.getValue()));
+
+        maxSpeedColumn.setCellValueFactory(cellData ->
+                carCellFactory.createMaxSpeedProperty(cellData.getValue()).asObject());
+
+        petrolTypeColumn.setCellValueFactory(cellData ->
+                carCellFactory.createPetrolTypeProperty(cellData.getValue()));
+
+        carPowerColumn.setCellValueFactory(cellData ->
+                carCellFactory.createPowerProperty(cellData.getValue()).asObject());
+
+        carCostColumn.setCellValueFactory(cellData ->
+                carCellFactory.createCostProperty(cellData.getValue()).asObject());
+        delButtonColumnCar.setCellFactory(column -> {
+            return new TableCell<Car, Void>() {
+                private final Button btn = new Button("Удалить");
+                {
+                    btn.setOnAction(e -> {
+                        Car car = getTableView().getItems().get(getIndex());
+                        boolean checker = sendCarToServer(car, DELETE_CAR);
+                        if (checker) {
+                            Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                            successAlert.setTitle("Успешное удаление");
+                            successAlert.setHeaderText(null);
+                            successAlert.setContentText("Автомобиль успешно удален из системы!");
+                            successAlert.showAndWait();
+                            refreshCarTable();
+                        } else {
+                            showAlert("Ошибка", "Произошла ошибка при удалении авто.");
+                        }
+                    });
+                }
+
+                @Override
+                protected void updateItem(Void item, boolean empty) {
+                    super.updateItem(item, empty);
+                    if (empty) {
+                        setGraphic(null);
+                    } else {
+                        setGraphic(btn);
+                    }
+                }
+            };
+        });
+    }
+
+    private void refreshCarTable() {
+        List<Car> cars = getCarsFromServer();
+        if (!cars.isEmpty()) {
+            ObservableList<Car> carObservableList = FXCollections.observableArrayList(cars);
+            deleteCarsTable.setItems(carObservableList);
+
+            System.out.println("All cars added to table: " + cars);
+        } else {
+            System.out.println("No cars retrieved or an error occurred.");
+        }
+    }
+
     private void showProfilePanel() {
         hideAllPanels();
         profilePanel.setVisible(true);
@@ -228,28 +340,6 @@ public class AdminPageController {
         } else {
             System.out.println("Нет информации о администраторе в сессии.");
         }
-    }
-
-    private void showAboutCompanyPanel() {
-        hideAllPanels();
-        aboutUsPanel.setVisible(true);
-        developerPane.setVisible(true);
-        aboutCompanyPane.setVisible(true);
-        connectionPane.setVisible(true);
-    }
-
-    private void hideAllPanels() {
-        addCarPanel.setVisible(false);
-        startPanel.setVisible(false);
-        giveRolePanel.setVisible(false);
-        deleteWorkerPanel.setVisible(false);
-        aboutUsPanel.setVisible(false);
-        viewCarsPanel.setVisible(false);
-        profilePanel.setVisible(false);
-        myprofilePanel.setVisible(false);
-        developerPane.setVisible(false);
-        aboutCompanyPane.setVisible(false);
-        connectionPane.setVisible(false);
     }
 
     private void showLogoutConfirmation() {
@@ -269,8 +359,171 @@ public class AdminPageController {
         });
     }
 
+    private void handleDeleteCarFromSystem() {
+        hideAllPanels();
+        deleteCarsPanel.setVisible(true);
+
+        refreshCarTable();
+        initializeDeleteCarsTable();
+    }
+
     private void handleAddCar() {
-        System.out.println("Adding a car...");
+        hideAllPanels();
+        addCarPanel.setVisible(true);
+        addCarForm.setVisible(true);
+    }
+
+    private void handleAddCarToSystem() {
+        String nameInput = brand.getText();
+        String powerInput = power.getText();
+        String costInput = cost.getText();
+        String maxSpeedInput = maxSpeed.getText();
+
+        String selectedPetrolType = petrolType.getValue();
+        String selectedCarType = carType.getValue();
+
+        boolean valid = true;
+
+        valid = checkEmptyFields(nameInput, powerInput, costInput, maxSpeedInput, selectedPetrolType, selectedCarType);
+        if(!valid)
+        {
+            showAlert("Ошибка ввода", "Заполните все поля");
+        }
+        else {
+            int powerValue = 0;
+            try {
+                powerValue = Integer.parseInt(powerInput);
+            } catch (NumberFormatException e) {
+                power.clear();
+                valid = false;
+            }
+
+            int maxSpeedValue = 0;
+            try {
+                maxSpeedValue = Integer.parseInt(maxSpeedInput);
+            } catch (NumberFormatException e) {
+
+                maxSpeed.clear();
+                valid = false;
+            }
+
+            double costValue = 0;
+            try {
+                costValue = Double.parseDouble(costInput);
+            } catch (NumberFormatException e) {
+                cost.clear();
+                valid = false;
+            }
+
+            if (valid) {
+                CarType carType = new CarType();
+                carType.setTypeName(selectedCarType);
+                switch (selectedCarType) {
+                    case "Легковая":
+                        carType.setIdType(1);
+                        break;
+                    case "Внедорожник":
+                        carType.setIdType(2);
+                        break;
+                    case "Купе":
+                        carType.setIdType(3);
+                        break;
+                    case "Минивен":
+                        carType.setIdType(4);
+                        break;
+                    default:
+                        showAlert("Ошибка", "Неизвестный тип автомобиля.");
+                        return;
+                }
+                Car car = new Car(maxSpeedValue,carType,selectedPetrolType,powerValue,nameInput,costValue,selectedFilePath);
+                boolean checker = sendCarToServer(car, ADD_CAR);
+                if (checker) {
+                    Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
+                    successAlert.setTitle("Успешное добавление");
+                    successAlert.setHeaderText(null);
+                    successAlert.setContentText("Автомобиль успешно добавлен в систему!");
+                    successAlert.showAndWait();
+                    hideAllPanels();
+                    startPanel.setVisible(true);
+                } else {
+                    showAlert("Ошибка", "Произошла ошибка при добавлении авто.");
+                }
+                clearFields();
+            } else {
+                showAlert("Ошибка ввода", "Очищены поля с некорректными данными");
+            }
+        }
+    }
+
+    private boolean sendCarToServer(Car car, RequestType type) {
+        Request request = new Request();
+        request.setRequestMessage(new Gson().toJson(car));
+        request.setRequestType(type);
+
+        ClientSocket.getInstance().getOut().println(new Gson().toJson(request));
+        ClientSocket.getInstance().getOut().flush();
+
+        String serverResponse;
+        try {
+            serverResponse = ClientSocket.getInstance().getIn().readLine();
+            if (serverResponse != null) {
+                System.out.println("Response from server: " + serverResponse);
+                Response response = new Gson().fromJson(serverResponse, Response.class);
+                return response.getResponseStatus() == ResponseStatus.OK;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+
+    private boolean checkEmptyFields(String brand, String power, String cost, String maxSpeed, String petrolType, String carType) {
+        boolean valid = true;
+
+        if (brand.isEmpty()) {
+            this.brand.clear();
+            valid = false;
+        }
+        if (power.isEmpty()) {
+            this.power.clear();
+            valid = false;
+        }
+        if (cost.isEmpty()) {
+            this.cost.clear();
+            valid = false;
+        }
+        if (maxSpeed.isEmpty()) {
+            this.maxSpeed.clear();
+            valid = false;
+        }
+        if (petrolType == null) {
+            this.petrolType.getSelectionModel().clearSelection();
+            valid = false;
+        }
+        if (carType == null) {
+            this.carType.getSelectionModel().clearSelection();
+            valid = false;
+        }
+
+        return valid;
+    }
+
+    private void showAlert(String title, String message) {
+        Alert alert = new Alert(Alert.AlertType.ERROR);
+        alert.setTitle(title);
+        alert.setHeaderText(null);
+        alert.setContentText(message);
+        alert.showAndWait();
+    }
+
+    private void clearFields() {
+        brand.clear();
+        power.clear();
+        cost.clear();
+        maxSpeed.clear();
+        petrolType.getSelectionModel().clearSelection();
+        carType.getSelectionModel().clearSelection();
+        selectedFilePath = null;
     }
 
     private void handleGiveRole() {
@@ -371,8 +624,7 @@ public class AdminPageController {
         }
     }
 
-    private void deleteWorkersOnServer(Map<User, Boolean> workerSelectionMap)
-    {
+    private void deleteWorkersOnServer(Map<User, Boolean> workerSelectionMap) {
         List<User> selectedWorkers = new ArrayList<>();
 
         for (Map.Entry<User, Boolean> entry : workerSelectionMap.entrySet()) {
@@ -417,19 +669,10 @@ public class AdminPageController {
             alert.showAndWait();
         }
     }
+
     private void handleAboutUs() {
         showAboutCompanyPanel();
         System.out.println("About Us clicked.");
-    }
-
-    private void openAuthorizationWindow() {
-        try {
-            SceneSwitcher.switchSceneStart("authorization.fxml", profile, "Authorization");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Не удалось загрузить authorization.fxml");
-        }
-        System.out.println("switch to authorization");
     }
 
     public List<User> getUsersFromServer() {
@@ -462,6 +705,38 @@ public class AdminPageController {
 
         return users;
     }
+
+    public List<Car> getCarsFromServer() {
+        List<Car> cars = new ArrayList<>();
+
+        Request request = new Request();
+        request.setRequestMessage("");
+        request.setRequestType(RequestType.GET_CARS);
+
+        try {
+            ClientSocket.getInstance().getOut().println(new Gson().toJson(request));
+            ClientSocket.getInstance().getOut().flush();
+
+            String responseJson = ClientSocket.getInstance().getIn().readLine();
+            if (responseJson != null) {
+                System.out.println("Response from server: " + responseJson);
+                Response response = new Gson().fromJson(responseJson, Response.class);
+
+                if (response.getResponseStatus() == ResponseStatus.OK) {
+                    System.out.println("Successfully retrieved cars.");
+                    Type carListType = new TypeToken<List<Car>>() {}.getType();
+                    cars = new Gson().fromJson(new Gson().toJson(response.getData()), carListType);
+                } else {
+                    System.out.println("Failed to retrieve cars: " + response.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return cars;
+    }
+
     private boolean sendPersonIdsToServer(List<Integer> personIds, RequestType type) {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(personIds));
@@ -491,5 +766,56 @@ public class AdminPageController {
             System.out.println("Error while sending person IDs to server.");
         }
         return false;
+    }
+
+    private void openFileChooser() {
+        FileChooser fileChooser = new FileChooser();
+        fileChooser.setTitle("Выберите изображение");
+        FileChooser.ExtensionFilter imageFilter =
+                new FileChooser.ExtensionFilter("Изображения (*.png, *.jpg, *.jpeg)", "*.png", "*.jpg", "*.jpeg");
+        fileChooser.getExtensionFilters().add(imageFilter);
+        File file = fileChooser.showOpenDialog(selectFileButton.getScene().getWindow());
+
+        if (file != null) {
+            selectedFilePath = file.getAbsolutePath();
+            System.out.println(selectedFilePath);
+        } else {
+            System.out.println("file not choosen");
+        }
+    }
+
+    private void showAboutCompanyPanel() {
+        hideAllPanels();
+        aboutUsPanel.setVisible(true);
+        developerPane.setVisible(true);
+        aboutCompanyPane.setVisible(true);
+        connectionPane.setVisible(true);
+    }
+
+    private void hideAllPanels() {
+        addCarPanel.setVisible(false);
+        startPanel.setVisible(false);
+        giveRolePanel.setVisible(false);
+        deleteWorkerPanel.setVisible(false);
+        aboutUsPanel.setVisible(false);
+        viewCarsPanel.setVisible(false);
+        profilePanel.setVisible(false);
+        myprofilePanel.setVisible(false);
+        developerPane.setVisible(false);
+        aboutCompanyPane.setVisible(false);
+        connectionPane.setVisible(false);
+        addCarPanel.setVisible(false);
+        addCarForm.setVisible(false);
+        deleteCarsPanel.setVisible(false);
+    }
+
+    private void openAuthorizationWindow() {
+        try {
+            SceneSwitcher.switchSceneStart("authorization.fxml", profile, "Authorization");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Не удалось загрузить authorization.fxml");
+        }
+        System.out.println("switch to authorization");
     }
 }

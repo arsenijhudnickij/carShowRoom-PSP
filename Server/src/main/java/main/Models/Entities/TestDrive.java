@@ -2,7 +2,6 @@ package main.Models.Entities;
 
 import javax.persistence.*;
 import java.time.LocalDate;
-import java.util.Set;
 
 @Entity
 @Table(name = "test_drive")
@@ -23,6 +22,7 @@ public class TestDrive {
     @Column(name = "drive_date", nullable = false)
     private LocalDate driveDate;
 
+    // Геттеры и сеттеры
     public int getTestDriveId() {
         return testDriveId;
     }

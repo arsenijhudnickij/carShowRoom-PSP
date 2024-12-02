@@ -15,7 +15,7 @@ public class Car {
     private int highSpeed;
 
     @ManyToOne(fetch = FetchType.EAGER, optional = false)
-    @JoinColumn(name = "car_type_id", nullable = false)
+    @JoinColumn(name = "id_type", nullable = false)
     private CarType carType;
 
     @Column(name = "petrol_type", nullable = false)
@@ -24,8 +24,8 @@ public class Car {
     @Column(name = "power", nullable = false)
     private int power;
 
-    @Column(name = "brand", nullable = false)
-    private String brand;
+    @Column(name = "name", nullable = false)
+    private String name;
 
     @Column(name = "cost", nullable = false)
     private double cost;
@@ -37,15 +37,19 @@ public class Car {
 
     public Car(int carId, int highSpeed,
                CarType carType, String petrolType, int power,
-               String brand, double cost, String imagePath) {
+               String name, double cost, String imagePath) {
         this.carId = carId;
         this.highSpeed = highSpeed;
         this.carType = carType;
         this.petrolType = petrolType;
         this.power = power;
-        this.brand = brand;
+        this.name = name;
         this.cost = cost;
         this.imagePath = imagePath;
+    }
+
+    public Car(int carId) {
+        this.carId =carId;
     }
 
     public int getCarId() {
@@ -88,12 +92,12 @@ public class Car {
         this.power = power;
     }
 
-    public String getBrand() {
-        return brand;
+    public String getName() {
+        return name;
     }
 
-    public void setBrand(String brand) {
-        this.brand = brand;
+    public void setName(String name) {
+        this.name = name;
     }
 
     public double getCost() {

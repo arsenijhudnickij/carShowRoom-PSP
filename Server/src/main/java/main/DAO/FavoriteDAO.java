@@ -38,6 +38,15 @@ public class FavoriteDAO implements DAO<Favorite>{
             tx.commit();
         }
     }
+    public void deleteByCarId(int carId) {
+        try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
+            Transaction tx = session.beginTransaction();
+            session.createQuery("DELETE FROM Favorite WHERE car.carId = :carId")
+                    .setParameter("carId", carId)
+                    .executeUpdate();
+            tx.commit();
+        }
+    }
 
     @Override
     public Favorite findById(int id) {

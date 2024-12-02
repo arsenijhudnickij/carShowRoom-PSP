@@ -6,5 +6,8 @@ public enum RequestType {
     CHECK_PERSON,
     GET_USERS,
     GIVE_ROLE,
-    DELETE_WORKER
+    DELETE_WORKER,
+    ADD_CAR,
+    DELETE_CAR,
+    GET_CARS
 }
