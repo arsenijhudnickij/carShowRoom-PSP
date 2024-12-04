@@ -32,8 +32,6 @@ public class AuthorizationController {
     @FXML
     private PasswordField passwordField;
     @FXML
-    private PasswordField passRepField;
-    @FXML
     private Button signInButton;
     @FXML
     private Label regLink;
@@ -45,7 +43,8 @@ public class AuthorizationController {
     private Label repPassLabel;
 
     @FXML
-    private void initialize() {
+    private void initialize()
+    {
         regLink.setOnMouseEntered(event -> regLink.setStyle("-fx-underline: true; -fx-cursor: hand;"));
         regLink.setOnMouseExited(event -> regLink.setStyle("-fx-underline: true; -fx-cursor: default;"));
         regLink.setOnMouseClicked(event -> openRegistrationWindow());
@@ -53,12 +52,12 @@ public class AuthorizationController {
         signInButton.setOnAction(event -> handleSignIn());
     }
 
-    private void handleSignIn() {
+    private void handleSignIn()
+    {
         clearErrorLabels();
 
         String login = loginField.getText().trim();
         String password = passwordField.getText();
-        String repPassword = passRepField.getText();
 
         boolean valid = true;
 
@@ -87,20 +86,6 @@ public class AuthorizationController {
         } else if (!RegistrationController.validateNoRussianLetters(password)) {
             passwordLabel.setText("Без кириллицы");
             passwordLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            valid = false;
-        }
-
-        if (repPassword.isEmpty()) {
-            repPassLabel.setText("Не должно быть пустым");
-            repPassLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            valid = false;
-        } else if (!password.equals(repPassword)) {
-            repPassLabel.setText("Пароли не совпадают");
-            repPassLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
-            valid = false;
-        } else if (!RegistrationController.validateNoRussianLetters(repPassword)) {
-            repPassLabel.setText("Без кириллицы");
-            repPassLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             valid = false;
         }
 
@@ -157,7 +142,8 @@ public class AuthorizationController {
         }
     }
 
-    private String hashPassword(String password) {
+    private String hashPassword(String password)
+    {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -173,19 +159,21 @@ public class AuthorizationController {
         }
     }
 
-    private void clearErrorLabels() {
+    private void clearErrorLabels()
+    {
         loginLabel.setText("");
         passwordLabel.setText("");
         repPassLabel.setText("");
     }
 
-    private void clearFields() {
+    private void clearFields()
+    {
         loginField.clear();
         passwordField.clear();
-        passRepField.clear();
     }
 
-    private Object loginPerson(Person person) {
+    private Object loginPerson(Person person)
+    {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(person));
         request.setRequestType(RequestType.LOGIN);
@@ -221,7 +209,8 @@ public class AuthorizationController {
     }
 
 
-    private void openWindow(String fxmlFile, String windowTitle) {
+    private void openWindow(String fxmlFile, String windowTitle)
+    {
         try {
             SceneSwitcher.switchScene(fxmlFile, signInButton, 1385, 740, windowTitle);
         } catch (IOException e) {
@@ -229,7 +218,8 @@ public class AuthorizationController {
             System.out.println("Не удалось загрузить файл " + fxmlFile);
         }
     }
-    private void openRegistrationWindow() {
+    private void openRegistrationWindow()
+    {
         try {
             SceneSwitcher.switchSceneStart("registration.fxml", regLink, "Registration");
         } catch (IOException e) {

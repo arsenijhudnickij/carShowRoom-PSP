@@ -97,7 +97,7 @@ public class PersonDAO implements DAO<Person>{
             tx.commit();
         }
     }
-    public void deleteWorkers(List<Integer> personIds) {
+    public void deleteUsers(List<Integer> personIds) {
         Transaction tx = null;
         try (Session session = HibernateSessionFactory.getSessionFactory().openSession()) {
             tx = session.beginTransaction();

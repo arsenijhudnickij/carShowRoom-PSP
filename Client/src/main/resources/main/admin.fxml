@@ -17,7 +17,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.text.Font?>
 
-<AnchorPane prefHeight="740.0" prefWidth="1385.0" stylesheets="@styleAdmin.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.AdminPageController">
+<AnchorPane prefHeight="740.0" prefWidth="1385.0" stylesheets="@styleTable.css" xmlns="http://javafx.com/javafx/23.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="main.controllers.AdminPageController">
    <children>
       <AnchorPane prefHeight="90.0" prefWidth="1385.0" style="-fx-background-color: #282828;">
          <children>
@@ -53,7 +53,7 @@
                   <Font name="System Bold" size="20.0" />
                </font>
             </Button>
-            <ComboBox fx:id="profile" layoutX="1123.0" layoutY="24.0" prefHeight="44.0" prefWidth="245.0" promptText="Мой профиль" style="-fx-background-color: #282828;" stylesheets="@style.css">
+            <ComboBox fx:id="profile" layoutX="1123.0" layoutY="24.0" prefHeight="44.0" prefWidth="245.0" promptText="Профиль" style="-fx-background-color: #282828;" stylesheets="@style.css">
                <items>
                   <FXCollections fx:factory="observableArrayList">
                      <String fx:value="Мой профиль" />
@@ -127,7 +127,7 @@
             </Label>
             <HBox fx:id="deleteCar" layoutX="5.0" layoutY="196.0" prefHeight="67.0" prefWidth="83.0">
                <children>
-                  <ImageView  fitHeight="69.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
+                  <ImageView fitHeight="69.0" fitWidth="90.0" pickOnBounds="true" preserveRatio="true">
                      <image>
                         <Image url="@../com/car_crossed_out.png" />
                      </image>
@@ -153,118 +153,39 @@
             <Label layoutX="44.0" layoutY="349.0" styleClass="paragraph" text="Вы можете добавлять, редактировать и удалять данные, а также просматривать статистику. В боковом меню доступны следующие функции: добавление автомобиля для учета данных, выдача роли для назначения задач сотрудникам, и увольнение сотрудника для завершения его работы в системе." textFill="#000000" wrapText="true" />
          </children>
       </AnchorPane>
-      <AnchorPane fx:id="addCarPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+      <AnchorPane fx:id="viewCarsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false" />
+      <AnchorPane fx:id="profilePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
          <children>
-            <AnchorPane fx:id="addCarForm" layoutX="139.0" layoutY="56.0" opacity="0.8" prefHeight="488.0" prefWidth="1017.0" style="-fx-background-color: #282828;">
+            <AnchorPane fx:id="myprofilePanel" layoutX="354.0" layoutY="110.0" opacity="0.8" prefHeight="381.0" prefWidth="587.0" style="-fx-background-color: #282828;" visible="false">
                <children>
-                  <Label layoutX="330.0" layoutY="30.0" text="Добавление автомобиля" textFill="WHITE">
+                  <Label layoutX="204.0" layoutY="25.0" text="Мой профиль" textFill="#f5f3f3">
                      <font>
-                        <Font name="System Bold" size="29.0" />
+                        <Font name="System Bold" size="26.0" />
                      </font>
                   </Label>
-                  <Button fx:id="addCarToSystem" layoutX="369.0" layoutY="427.0" mnemonicParsing="false" style="-fx-background-color: WHITE;" text="Добавление автомобиля в систему" textFill="#282828">
+                  <Label layoutX="52.0" layoutY="122.0" text="Роль:" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="24.0" />
                      </font>
-                  </Button>
-                  <Button fx:id="selectFileButton" layoutX="105.0" layoutY="294.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="225.0" style="-fx-background-color: WHITE;" text="Выбрать файл" textFill="#282828">
+                  </Label>
+                  <Label layoutX="52.0" layoutY="238.0" text="Логин:" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="15.0" />
+                        <Font name="System Bold" size="24.0" />
                      </font>
-                  </Button>
-                  <TextField fx:id="brand" layoutX="105.0" layoutY="125.0" promptText="Название">
+                  </Label>
+                  <Label fx:id="roleField" layoutX="131.0" layoutY="125.0" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="17.0" />
+                        <Font name="System Bold" size="20.0" />
                      </font>
-                  </TextField>
-                  <TextField fx:id="power" layoutX="105.0" layoutY="206.0" promptText="Лошадиные силы">
+                  </Label>
+                  <Label fx:id="loginField" layoutX="140.0" layoutY="241.0" textFill="WHITE">
                      <font>
-                        <Font name="System Bold" size="17.0" />
+                        <Font name="System Bold" size="20.0" />
                      </font>
-                  </TextField>
-                  <TextField fx:id="cost" layoutX="687.0" layoutY="125.0" promptText="Стоимость">
-                     <font>
-                        <Font name="System Bold" size="17.0" />
-                     </font>
-                  </TextField>
-                  <TextField fx:id="maxSpeed" layoutX="687.0" layoutY="206.0" promptText="Максимальная скорость">
-                     <font>
-                        <Font name="System Bold" size="17.0" />
-                     </font>
-                  </TextField>
-                  <ComboBox fx:id="petrolType" layoutX="687.0" layoutY="294.0" prefHeight="38.0" prefWidth="225.0" promptText="Тип топлива" style="-fx-background-color: #FFFFFF;">
-                  <items>
-                     <FXCollections fx:factory="observableArrayList">
-                        <String fx:value="Бензин" />
-                        <String fx:value="Газ" />
-                        <String fx:value="Дизель" />
-                        <String fx:value="Электричка" />
-                     </FXCollections>
-                  </items>
-               </ComboBox>
-
-                  <ComboBox fx:id="carType" layoutX="396.0" layoutY="348.0" prefHeight="38.0" prefWidth="225.0" promptText="Тип автомобиля" style="-fx-background-color: #FFFFFF;">
-                     <items>
-                        <FXCollections fx:factory="observableArrayList">
-                           <String fx:value="Легковая" />
-                           <String fx:value="Внедорожник" />
-                           <String fx:value="Купе" />
-                           <String fx:value="Минивен" />
-                        </FXCollections>
-                     </items>
-                  </ComboBox>
+                  </Label>
                </children>
             </AnchorPane>
-         </children>
-      </AnchorPane>
-      <AnchorPane fx:id="giveRolePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-         <ScrollPane fx:id="userScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
-            <content>
-               <TableView fx:id="userTable" layoutX="20.0" layoutY="20.0" prefHeight="447.0" prefWidth="1255.0" style="-fx-background-color: #282828;">
-                  <columns>
-                     <TableColumn fx:id="surnameColumn" prefWidth="150.0" text="Фамилия" />
-                     <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Имя" />
-                     <TableColumn fx:id="patronymicColumn" prefWidth="150.0" text="Отчество" /> <!-- Новый столбец -->
-                     <TableColumn fx:id="passportColumn" prefWidth="150.0" text="Номер паспорта" />
-                     <TableColumn fx:id="birthDateColumn" prefWidth="150.0" text="Дата рождения" />
-                     <TableColumn fx:id="checkboxColumn" prefWidth="100.0" text="Выдать роль" />
-                  </columns>
-                  <columnResizePolicy>
-                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                  </columnResizePolicy>
-               </TableView>
-            </content>
-         </ScrollPane>
-         <Button fx:id="sendNewRoles" layoutX="560.0" layoutY="523.0" mnemonicParsing="false" style="-fx-background-color: #282828;" text="Выдать роль" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="23.0" />
-            </font>
-         </Button>
-      </AnchorPane>
-      <AnchorPane fx:id="deleteWorkerPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-         <ScrollPane fx:id="workerScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
-            <content>
-               <TableView fx:id="workerTable" layoutX="20.0" layoutY="20.0" prefHeight="447.0" prefWidth="1255.0" style="-fx-background-color: #282828;">
-                  <columns>
-                     <TableColumn fx:id="surnameColumnWorker" prefWidth="150.0" text="Фамилия" />
-                     <TableColumn fx:id="nameColumnWorker" prefWidth="150.0" text="Имя" />
-                     <TableColumn fx:id="patronymicColumnWorker" prefWidth="150.0" text="Отчество" />
-                     <TableColumn fx:id="passportColumnWorker" prefWidth="150.0" text="Номер паспорта" />
-                     <TableColumn fx:id="birthDateColumnWorker" prefWidth="150.0" text="Дата рождения" />
-                     <TableColumn fx:id="checkboxColumnWorker" prefWidth="100.0" text="Уволить" />
-                  </columns>
-                  <columnResizePolicy>
-                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
-                  </columnResizePolicy>
-               </TableView>
-            </content>
-         </ScrollPane>
-         <Button fx:id="deleteWorkers" layoutX="560.0" layoutY="523.0" mnemonicParsing="false" style="-fx-background-color: #282828;" text="Уволить сотрудника" textFill="WHITE">
-            <font>
-               <Font name="System Bold" size="23.0" />
-            </font>
-         </Button>
-      </AnchorPane>
+         </children></AnchorPane>
       <AnchorPane fx:id="aboutUsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
          <children>
             <AnchorPane fx:id="developerPane" layoutX="51.0" layoutY="103.0" opacity="0.8" prefHeight="368.0" prefWidth="357.0" style="-fx-background-color: #282828;" visible="false">
@@ -385,7 +306,119 @@
                </children>
             </AnchorPane>
          </children></AnchorPane>
-      <AnchorPane fx:id="viewCarsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false" />
+
+      <AnchorPane fx:id="addCarPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+         <children>
+            <AnchorPane fx:id="addCarForm" layoutX="139.0" layoutY="56.0" opacity="0.8" prefHeight="488.0" prefWidth="1017.0" style="-fx-background-color: #282828;">
+               <children>
+                  <Label layoutX="330.0" layoutY="30.0" text="Добавление автомобиля" textFill="WHITE">
+                     <font>
+                        <Font name="System Bold" size="29.0" />
+                     </font>
+                  </Label>
+                  <Button fx:id="addCarToSystem" layoutX="369.0" layoutY="427.0" mnemonicParsing="false" style="-fx-background-color: WHITE;" text="Добавление автомобиля в систему" textFill="#282828">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <Button fx:id="selectFileButton" layoutX="105.0" layoutY="294.0" mnemonicParsing="false" prefHeight="38.0" prefWidth="225.0" style="-fx-background-color: WHITE;" text="Выбрать файл" textFill="#282828">
+                     <font>
+                        <Font name="System Bold" size="15.0" />
+                     </font>
+                  </Button>
+                  <TextField fx:id="brand" layoutX="105.0" layoutY="125.0" promptText="Название">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </TextField>
+                  <TextField fx:id="power" layoutX="105.0" layoutY="206.0" promptText="Лошадиные силы">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </TextField>
+                  <TextField fx:id="cost" layoutX="687.0" layoutY="125.0" promptText="Стоимость">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </TextField>
+                  <TextField fx:id="maxSpeed" layoutX="687.0" layoutY="206.0" promptText="Максимальная скорость">
+                     <font>
+                        <Font name="System Bold" size="17.0" />
+                     </font>
+                  </TextField>
+                  <ComboBox fx:id="petrolType" layoutX="687.0" layoutY="294.0" prefHeight="38.0" prefWidth="225.0" promptText="Тип топлива" style="-fx-background-color: #FFFFFF; -fx-font-weight: bold;">
+                     <items>
+                        <FXCollections fx:factory="observableArrayList">
+                           <String fx:value="Бензин" />
+                           <String fx:value="Газ" />
+                           <String fx:value="Дизель" />
+                           <String fx:value="Электричка" />
+                        </FXCollections>
+                     </items>
+                  </ComboBox>
+
+                  <ComboBox fx:id="carType" layoutX="396.0" layoutY="348.0" prefHeight="38.0" prefWidth="225.0" promptText="Тип автомобиля" style="-fx-background-color: #FFFFFF; -fx-font-weight: bold;">
+                     <items>
+                        <FXCollections fx:factory="observableArrayList">
+                           <String fx:value="Легковая" />
+                           <String fx:value="Внедорожник" />
+                           <String fx:value="Купе" />
+                           <String fx:value="Минивен" />
+                        </FXCollections>
+                     </items>
+                  </ComboBox>
+               </children>
+            </AnchorPane>
+         </children>
+      </AnchorPane>
+      <AnchorPane fx:id="giveRolePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+         <ScrollPane fx:id="userScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
+            <content>
+               <TableView fx:id="userTable" layoutX="20.0" layoutY="20.0" prefHeight="447.0" prefWidth="1255.0" style="-fx-background-color: #282828;">
+                  <columns>
+                     <TableColumn fx:id="surnameColumn" prefWidth="150.0" text="Фамилия" />
+                     <TableColumn fx:id="nameColumn" prefWidth="150.0" text="Имя" />
+                     <TableColumn fx:id="patronymicColumn" prefWidth="150.0" text="Отчество" />
+                     <TableColumn fx:id="passportColumn" prefWidth="150.0" text="Номер паспорта" />
+                     <TableColumn fx:id="birthDateColumn" prefWidth="150.0" text="Дата рождения" />
+                     <TableColumn fx:id="checkboxColumn" prefWidth="100.0" text="Выдать роль" />
+                  </columns>
+                  <columnResizePolicy>
+                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                  </columnResizePolicy>
+               </TableView>
+            </content>
+         </ScrollPane>
+         <Button fx:id="sendNewRoles" layoutX="560.0" layoutY="523.0" mnemonicParsing="false" style="-fx-background-color: #282828;" text="Выдать роль" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="23.0" />
+            </font>
+         </Button>
+      </AnchorPane>
+      <AnchorPane fx:id="deleteWorkerPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0">
+         <ScrollPane fx:id="workerScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
+            <content>
+               <TableView fx:id="workerTable" layoutX="20.0" layoutY="20.0" prefHeight="447.0" prefWidth="1255.0" style="-fx-background-color: #282828;">
+                  <columns>
+                     <TableColumn fx:id="surnameColumnWorker" prefWidth="150.0" text="Фамилия" />
+                     <TableColumn fx:id="nameColumnWorker" prefWidth="150.0" text="Имя" />
+                     <TableColumn fx:id="patronymicColumnWorker" prefWidth="150.0" text="Отчество" />
+                     <TableColumn fx:id="passportColumnWorker" prefWidth="150.0" text="Номер паспорта" />
+                     <TableColumn fx:id="birthDateColumnWorker" prefWidth="150.0" text="Дата рождения" />
+                     <TableColumn fx:id="checkboxColumnWorker" prefWidth="100.0" text="Уволить" />
+                  </columns>
+                  <columnResizePolicy>
+                     <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+                  </columnResizePolicy>
+               </TableView>
+            </content>
+         </ScrollPane>
+         <Button fx:id="deleteWorkers" layoutX="518.0" layoutY="522.0" mnemonicParsing="false" style="-fx-background-color: #282828;" text="Уволить сотрудников" textFill="WHITE">
+            <font>
+               <Font name="System Bold" size="23.0" />
+            </font>
+         </Button>
+      </AnchorPane>
       <AnchorPane fx:id="deleteCarsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
          <ScrollPane fx:id="carsScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
             <content>
@@ -406,37 +439,5 @@
             </content>
          </ScrollPane>
       </AnchorPane>
-      <AnchorPane fx:id="profilePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-         <children>
-            <AnchorPane fx:id="myprofilePanel" layoutX="354.0" layoutY="110.0" opacity="0.8" prefHeight="381.0" prefWidth="587.0" style="-fx-background-color: #282828;" visible="false">
-               <children>
-                  <Label layoutX="204.0" layoutY="25.0" text="Мой профиль" textFill="#f5f3f3">
-                     <font>
-                        <Font name="System Bold" size="26.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="52.0" layoutY="122.0" text="Роль:" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <Label layoutX="52.0" layoutY="238.0" text="Логин:" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="24.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="roleField" layoutX="131.0" layoutY="125.0" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="20.0" />
-                     </font>
-                  </Label>
-                  <Label fx:id="loginField" layoutX="140.0" layoutY="241.0" textFill="WHITE">
-                     <font>
-                        <Font name="System Bold" size="20.0" />
-                     </font>
-                  </Label>
-               </children>
-            </AnchorPane>
-         </children></AnchorPane>
-   </children>
+      </children>
 </AnchorPane>

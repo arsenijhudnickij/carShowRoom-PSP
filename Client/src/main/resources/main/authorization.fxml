@@ -54,15 +54,14 @@
                   <Font name="System Bold" size="33.0" />
                </font>
             </Label>
-            <TextField fx:id="loginField" layoutX="96.0" layoutY="102.0" prefHeight="41.0" prefWidth="241.0" promptText="Логин" style="-fx-background-radius: 10px;" />
-            <PasswordField fx:id="passwordField" layoutX="96.0" layoutY="167.0" prefHeight="41.0" prefWidth="241.0" promptText="Пароль" style="-fx-background-radius: 10px;" />
+            <TextField fx:id="loginField" layoutX="96.0" layoutY="130.0" prefHeight="41.0" prefWidth="241.0" promptText="Логин" style="-fx-background-radius: 10px;" />
+            <PasswordField fx:id="passwordField" layoutX="96.0" layoutY="217.0" prefHeight="41.0" prefWidth="241.0" promptText="Пароль" style="-fx-background-radius: 10px;" />
             <Button fx:id="signInButton" layoutX="137.0" layoutY="310.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="158.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px;" text="Авторизация" textFill="#282828">
                <font>
                   <Font name="System Bold" size="15.0" />
                </font>
             </Button>
             <Label fx:id="regLink" layoutX="139.0" layoutY="357.0" style="-fx-underline: true;" text="Нет аккаунта? Регистрация" textFill="#2e8ceb" />
-            <PasswordField fx:id="passRepField" layoutX="96.0" layoutY="237.0" prefHeight="41.0" prefWidth="241.0" promptText="Повторите пароль" style="-fx-background-radius: 10px;" />
             <Label fx:id="loginLabel" layoutX="96.0" layoutY="82.0" />
             <Label fx:id="passwordLabel" layoutX="96.0" layoutY="150.0" />
             <Label fx:id="repPassLabel" layoutX="96.0" layoutY="220.0" />

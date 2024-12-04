@@ -85,9 +85,9 @@ public class PersonService implements Service {
             ShowException.showNotice(e);
         }
     }
-    public void deleteWorkers(List<Integer> personIds) {
+    public void deleteUsers(List<Integer> personIds) {
         try {
-            personDAO.deleteWorkers(personIds);
+            personDAO.deleteUsers(personIds);
         } catch (HibernateError e) {
             ShowException.showNotice(e);
         }

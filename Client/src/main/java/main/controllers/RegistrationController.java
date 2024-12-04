@@ -1,24 +1,13 @@
 package main.controllers;
 
 import com.google.gson.Gson;
-import javafx.animation.PauseTransition;
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Scene;
 import javafx.scene.control.*;
-import javafx.scene.input.MouseEvent;
-import javafx.stage.Stage;
-import javafx.scene.Node;
-import javafx.event.ActionEvent;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.time.LocalDate;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
-
-import javafx.util.Duration;
 import main.enums.RequestType;
 import main.enums.ResponseStatus;
 import main.enums.RoleName;
@@ -41,6 +30,10 @@ public class RegistrationController {
     @FXML
     private TextField loginField;
     @FXML
+    private TextField gmailField;
+    @FXML
+    private Label gmailLabel;
+    @FXML
     private PasswordField passwordField;
     @FXML
     private PasswordField seсondPassField;
@@ -62,14 +55,16 @@ public class RegistrationController {
     private Label repPassLabel;
 
     @FXML
-    private void initialize() {
+    private void initialize()
+    {
         authLink.setOnMouseClicked(event -> openAuthorizationWindow());
         authLink.setOnMouseEntered(event -> authLink.setStyle("-fx-underline: true; -fx-cursor: hand;"));
         authLink.setOnMouseExited(event -> authLink.setStyle("-fx-underline: true; -fx-cursor: default;"));
         signUpButton.setOnAction(event -> validateUser());
     }
 
-    private void validateUser() {
+    private void validateUser()
+    {
         clearErrorLabels();
 
         String fio = FIOField.getText().trim();
@@ -78,6 +73,7 @@ public class RegistrationController {
         String login = loginField.getText().trim();
         String password = passwordField.getText();
         String confirmPassword = seсondPassField.getText();
+        String gmail = gmailField.getText();
 
         boolean valid = true;
 
@@ -98,6 +94,15 @@ public class RegistrationController {
         } else if (!validatePassportNum(passportNum)) {
             passportLabel.setText("Некорректный номер паспорта");
             passportLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            valid = false;
+        }
+        if (gmail.isEmpty()) {
+            gmailLabel.setText("Не должно быть пустым");
+            gmailLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
+            valid = false;
+        } else if (!validateEmail(gmail)) {
+            gmailLabel.setText("Некорректный формат email");
+            gmailLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             valid = false;
         }
 
@@ -127,7 +132,6 @@ public class RegistrationController {
             loginLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
             valid = false;
         }
-
         if (password.isEmpty()) {
             passwordLabel.setText("Не должно быть пустым");
             passwordLabel.setStyle("-fx-text-fill: red; -fx-font-size: 12px;");
@@ -177,7 +181,7 @@ public class RegistrationController {
             int checker = checkPersonExists(person);
             if ( checker >= 0) {
                 person.setPersonId(checker);
-                User user = new User(fio, passportNum, birthDate, birthMonth, birthYear, person);
+                User user = new User(fio, passportNum, birthDate, birthMonth, birthYear, person,gmail);
                 User registeredUser = sendUserToServer(user);
                 clearFields();
 
@@ -215,6 +219,11 @@ public class RegistrationController {
             }
         }
     }
+    private boolean validateEmail(String email)
+    {
+        String emailRegex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
+        return email.matches(emailRegex);
+    }
 
     public static boolean validateSymbolNumber(String str) {
         return str.length() >= 8 && str.length() <= 16;
@@ -222,7 +231,8 @@ public class RegistrationController {
     public static boolean validateNoRussianLetters(String str) {
         return !str.matches(".*[а-яА-Я].*");
     }
-    private void clearFields() {
+    private void clearFields()
+    {
         FIOField.clear();
         passportNumField.clear();
         dateField.setValue(null);
@@ -230,7 +240,8 @@ public class RegistrationController {
         passwordField.clear();
         seсondPassField.clear();
     }
-    private void clearErrorLabels() {
+    private void clearErrorLabels()
+    {
         FIOLabel.setText("");
         passportLabel.setText("");
         dateLabel.setText("");
@@ -238,7 +249,8 @@ public class RegistrationController {
         passwordLabel.setText("");
         repPassLabel.setText("");
     }
-    private boolean validateFIO(String fio) {
+    private boolean validateFIO(String fio)
+    {
         String[] parts = fio.split(" ");
         if (parts.length != 3) {
             return false;
@@ -253,7 +265,8 @@ public class RegistrationController {
     private boolean validatePassportNum(String passportNum) {
         return passportNum.matches("[A-Z]{2}\\d{6}");
     }
-    private void openAuthorizationWindow() {
+    private void openAuthorizationWindow()
+    {
         try {
             SceneSwitcher.switchSceneStart("authorization.fxml", authLink, "Authorization");
         } catch (IOException e) {
@@ -262,7 +275,8 @@ public class RegistrationController {
         }
         System.out.println("switch to authorization");
     }
-    private int checkPersonExists(Person person) {
+    private int checkPersonExists(Person person)
+    {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(person));
         request.setRequestType(
@@ -302,7 +316,8 @@ public class RegistrationController {
         }
         return -1;
     }
-    private String hashPassword(String password) {
+    private String hashPassword(String password)
+    {
         try {
             MessageDigest digest = MessageDigest.getInstance("SHA-256");
             byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
@@ -317,7 +332,8 @@ public class RegistrationController {
             throw new RuntimeException("Ошибка при хешировании пароля", e);
         }
     }
-    private User sendUserToServer(User user) {
+    private User sendUserToServer(User user)
+    {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(user));
         request.setRequestType(RequestType.SIGNUP);

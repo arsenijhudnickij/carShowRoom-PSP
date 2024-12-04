@@ -57,8 +57,8 @@
             </Label>
             <TextField fx:id="FIOField" layoutX="18.0" layoutY="86.0" prefHeight="33.0" prefWidth="166.0" promptText="ФИО" style="-fx-background-radius: 10px;" />
             <TextField fx:id="passportNumField" layoutX="246.0" layoutY="86.0" prefHeight="33.0" prefWidth="166.0" promptText="Номер паспорта" style="-fx-background-radius: 10px;" />
-            <DatePicker fx:id="dateField" layoutX="108.0" layoutY="148.0" prefHeight="33.0" prefWidth="214.0" promptText="Дата рождения" />
-            <TextField fx:id="loginField" layoutX="108.0" layoutY="209.0" prefHeight="33.0" prefWidth="214.0" promptText="Логин" style="-fx-background-radius: 10px;" />
+            <DatePicker fx:id="dateField" layoutX="18.0" layoutY="157.0" prefHeight="33.0" prefWidth="166.0" promptText="Дата рождения" />
+            <TextField fx:id="loginField" layoutX="246.0" layoutY="157.0" prefHeight="33.0" prefWidth="166.0" promptText="Логин" style="-fx-background-radius: 10px;" />
             <PasswordField fx:id="passwordField" layoutX="18.0" layoutY="268.0" prefHeight="33.0" prefWidth="166.0" promptText="Пароль" style="-fx-background-radius: 10px;" />
             <PasswordField fx:id="seсondPassField" layoutX="246.0" layoutY="268.0" prefHeight="33.0" prefWidth="166.0" promptText="Повторите пароль" style="-fx-background-radius: 10px;" />
             <Button fx:id="signUpButton" layoutX="136.0" layoutY="317.0" mnemonicParsing="false" prefHeight="33.0" prefWidth="158.0" style="-fx-background-color: #FFFFFF; -fx-background-radius: 10px;" text="Регистрация" textFill="#282828">
@@ -69,10 +69,12 @@
             <Label fx:id="authLink" layoutX="128.0" layoutY="361.0" style="-fx-underline: true;" text="Уже есть аккаунт? Авторизация" textFill="#2e8ceb" />
             <Label fx:id="FIOLabel" layoutX="18.0" layoutY="65.0" />
             <Label fx:id="passportLabel" layoutX="246.0" layoutY="65.0" />
-            <Label fx:id="dateLabel" layoutX="108.0" layoutY="131.0" />
-            <Label fx:id="loginLabel" layoutX="108.0" layoutY="192.0" />
+            <Label fx:id="dateLabel" layoutX="18.0" layoutY="140.0" />
+            <Label fx:id="loginLabel" layoutX="246.0" layoutY="140.0" />
             <Label fx:id="passwordLabel" layoutX="18.0" layoutY="251.0" />
             <Label fx:id="repPassLabel" layoutX="246.0" layoutY="251.0" />
+            <TextField fx:id="gmailField" layoutX="135.0" layoutY="218.0" prefHeight="33.0" prefWidth="166.0" promptText="Почта" style="-fx-background-radius: 10px;" />
+            <Label fx:id="gmailLabel" layoutX="136.0" layoutY="200.0" />
          </children>
       </AnchorPane>
    </children>

@@ -1,5 +1,7 @@
 package main.Models.Entities;
 
+import main.Enums.TestDriveStatus;
+
 import javax.persistence.*;
 import java.time.LocalDate;
 
@@ -22,7 +24,9 @@ public class TestDrive {
     @Column(name = "drive_date", nullable = false)
     private LocalDate driveDate;
 
-    // Геттеры и сеттеры
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private TestDriveStatus status;
     public int getTestDriveId() {
         return testDriveId;
     }
@@ -53,5 +57,13 @@ public class TestDrive {
 
     public void setDriveDate(LocalDate driveDate) {
         this.driveDate = driveDate;
+    }
+
+    public TestDriveStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TestDriveStatus status) {
+        this.status = status;
     }
 }

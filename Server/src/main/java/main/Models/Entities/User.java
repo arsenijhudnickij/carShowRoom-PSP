@@ -26,29 +26,34 @@ public class User {
     @Column(name = "birth_year")
     private int birthYear;
 
+    @Column(name = "gmail", unique = true, length = 100)
+    private String gmail;
+
     @OneToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "person_id" , nullable = false)
+    @JoinColumn(name = "person_id",unique = true, nullable = false)
     private Person person;
 
     public User() {
     }
 
-    public User(String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person) {
+    public User(String name, String passportNum, int birthDate, int birthMonth, int birthYear, String gmail, Person person) {
         this.name = name;
         this.passportNum = passportNum;
         this.birthDate = birthDate;
         this.birthMonth = birthMonth;
         this.birthYear = birthYear;
+        this.gmail = gmail;
         this.person = person;
     }
 
-    public User(int userId, String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person) {
+    public User(int userId, String name, String passportNum, int birthDate, int birthMonth, int birthYear, String gmail, Person person) {
         this.userId = userId;
         this.name = name;
         this.passportNum = passportNum;
         this.birthDate = birthDate;
         this.birthMonth = birthMonth;
         this.birthYear = birthYear;
+        this.gmail = gmail;
         this.person = person;
     }
 
@@ -98,6 +103,14 @@ public class User {
 
     public void setBirthYear(int birthYear) {
         this.birthYear = birthYear;
+    }
+
+    public String getGmail() {
+        return gmail;
+    }
+
+    public void setGmail(String gmail) {
+        this.gmail = gmail;
     }
 
     public Person getPerson() {

@@ -148,14 +148,18 @@ public class AdminPageController {
     private String selectedFilePath;
 
     @FXML
-    public void initialize() {
+    public void initialize()
+    {
+        setButtonCellForComboBox(profile);
+        setButtonCellForComboBox(petrolType);
+        setButtonCellForComboBox(carType);
+
         surnameColumn.setCellValueFactory(cellData -> {
             String fullName = cellData.getValue().getName();
             String[] nameParts = fullName.split(" ", 3);
-            String surname = nameParts.length > 0 ? nameParts[0] : "";
-            return new SimpleStringProperty(surname);
+            String name = nameParts.length > 1 ? nameParts[0] : "";
+            return new SimpleStringProperty(name);
         });
-
         nameColumn.setCellValueFactory(cellData -> {
             String fullName = cellData.getValue().getName();
             String[] nameParts = fullName.split(" ", 3);
@@ -238,33 +242,47 @@ public class AdminPageController {
             return new SimpleObjectProperty<>(checkBox);
         });
     }
-
-    private void initHandlers() {
+    private <T> void setButtonCellForComboBox(ComboBox<T> comboBox)
+    {
+        comboBox.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(comboBox.getPromptText());
+                } else {
+                    setText(item.toString());
+                }
+            }
+        });
+    }
+    private void initHandlers()
+    {
         addCar.setOnMouseClicked(event -> handleAddCar());
         giveRole.setOnMouseClicked(event -> handleGiveRole());
         deleteWorker.setOnMouseClicked(event -> handleDeleteWorker());
         aboutUs.setOnMouseClicked(event -> handleAboutUs());
         sendNewRoles.setOnMouseClicked(event -> saveRolesOnServer( userSelectionMap));
         deleteWorkers.setOnMouseClicked(event -> deleteWorkersOnServer( workerSelectionMap));
-        deleteCar.setOnMouseClicked(event -> handleAboutUs());
         addCarToSystem.setOnMouseClicked(event -> handleAddCarToSystem());
         deleteCar.setOnMouseClicked(event ->  handleDeleteCarFromSystem());
     }
 
-    private void initProfileHandler() {
+    private void initProfileHandler()
+    {
         profile.setOnAction(event -> {
             String selectedItem = profile.getValue();
             if ("Выход".equals(selectedItem)) {
                 showLogoutConfirmation();
             } else if ("Мой профиль".equals(selectedItem)) {
                 showProfilePanel();
-            } else if ("О компании".equals(selectedItem)) {
-                showAboutCompanyPanel();
+                profile.setValue(null);
             }
         });
     }
 
-    private void initializeDeleteCarsTable() {
+    private void initializeDeleteCarsTable()
+    {
         CarCellFactory carCellFactory = new CarCellFactoryImpl();
         carNameColumn.setCellValueFactory(cellData ->
                 carCellFactory.createNameProperty(cellData.getValue()));
@@ -316,7 +334,8 @@ public class AdminPageController {
         });
     }
 
-    private void refreshCarTable() {
+    private void refreshCarTable()
+    {
         List<Car> cars = getCarsFromServer();
         if (!cars.isEmpty()) {
             ObservableList<Car> carObservableList = FXCollections.observableArrayList(cars);
@@ -328,7 +347,8 @@ public class AdminPageController {
         }
     }
 
-    private void showProfilePanel() {
+    private void showProfilePanel()
+    {
         hideAllPanels();
         profilePanel.setVisible(true);
         myprofilePanel.setVisible(true);
@@ -342,7 +362,8 @@ public class AdminPageController {
         }
     }
 
-    private void showLogoutConfirmation() {
+    private void showLogoutConfirmation()
+    {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
         alert.setTitle("Подтверждение выхода");
         alert.setHeaderText("Вы уверены, что хотите выйти?");
@@ -359,7 +380,8 @@ public class AdminPageController {
         });
     }
 
-    private void handleDeleteCarFromSystem() {
+    private void handleDeleteCarFromSystem()
+    {
         hideAllPanels();
         deleteCarsPanel.setVisible(true);
 
@@ -367,13 +389,15 @@ public class AdminPageController {
         initializeDeleteCarsTable();
     }
 
-    private void handleAddCar() {
+    private void handleAddCar()
+    {
         hideAllPanels();
         addCarPanel.setVisible(true);
         addCarForm.setVisible(true);
     }
 
-    private void handleAddCarToSystem() {
+    private void handleAddCarToSystem()
+    {
         String nameInput = brand.getText();
         String powerInput = power.getText();
         String costInput = cost.getText();
@@ -443,8 +467,7 @@ public class AdminPageController {
                     successAlert.setHeaderText(null);
                     successAlert.setContentText("Автомобиль успешно добавлен в систему!");
                     successAlert.showAndWait();
-                    hideAllPanels();
-                    startPanel.setVisible(true);
+
                 } else {
                     showAlert("Ошибка", "Произошла ошибка при добавлении авто.");
                 }
@@ -455,7 +478,8 @@ public class AdminPageController {
         }
     }
 
-    private boolean sendCarToServer(Car car, RequestType type) {
+    private boolean sendCarToServer(Car car, RequestType type)
+    {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(car));
         request.setRequestType(type);
@@ -477,7 +501,8 @@ public class AdminPageController {
         return false;
     }
 
-    private boolean checkEmptyFields(String brand, String power, String cost, String maxSpeed, String petrolType, String carType) {
+    private boolean checkEmptyFields(String brand, String power, String cost, String maxSpeed, String petrolType, String carType)
+    {
         boolean valid = true;
 
         if (brand.isEmpty()) {
@@ -508,7 +533,8 @@ public class AdminPageController {
         return valid;
     }
 
-    private void showAlert(String title, String message) {
+    private void showAlert(String title, String message)
+    {
         Alert alert = new Alert(Alert.AlertType.ERROR);
         alert.setTitle(title);
         alert.setHeaderText(null);
@@ -516,7 +542,8 @@ public class AdminPageController {
         alert.showAndWait();
     }
 
-    private void clearFields() {
+    private void clearFields()
+    {
         brand.clear();
         power.clear();
         cost.clear();
@@ -526,11 +553,16 @@ public class AdminPageController {
         selectedFilePath = null;
     }
 
-    private void handleGiveRole() {
+    private void handleGiveRole()
+    {
         hideAllPanels();
         giveRolePanel.setVisible(true);
         System.out.println("Requesting all users...");
 
+        loadAndFilterUsers();
+    }
+
+    private void loadAndFilterUsers() {
         List<User> users = getUsersFromServer();
         if (!users.isEmpty()) {
             List<User> filteredUsers = users.stream()
@@ -545,15 +577,11 @@ public class AdminPageController {
             for (User user : filteredUsers) {
                 userSelectionMap.put(user, false);
             }
-
-            System.out.println("Filtered users added to table: " + filteredUsers);
-        }
-        else {
-            System.out.println("No users retrieved or an error occurred.");
         }
     }
 
-    private void saveRolesOnServer(Map<User, Boolean> userSelectionMap) {
+    private void saveRolesOnServer(Map<User, Boolean> userSelectionMap)
+    {
         List<User> selectedUsers = new ArrayList<>();
 
         for (Map.Entry<User, Boolean> entry : userSelectionMap.entrySet()) {
@@ -576,8 +604,7 @@ public class AdminPageController {
                 successAlert.setContentText("Роли для выбранных пользователей были успешно обновлены.");
                 successAlert.showAndWait();
 
-                hideAllPanels();
-                startPanel.setVisible(true);
+                loadAndFilterUsers();
            }
             else
             {
@@ -599,7 +626,8 @@ public class AdminPageController {
         }
     }
 
-    private void handleDeleteWorker() {
+    private void handleDeleteWorker()
+    {
         hideAllPanels();
         deleteWorkerPanel.setVisible(true);
         System.out.println("Requesting all workers...");
@@ -624,7 +652,8 @@ public class AdminPageController {
         }
     }
 
-    private void deleteWorkersOnServer(Map<User, Boolean> workerSelectionMap) {
+    private void deleteWorkersOnServer(Map<User, Boolean> workerSelectionMap)
+    {
         List<User> selectedWorkers = new ArrayList<>();
 
         for (Map.Entry<User, Boolean> entry : workerSelectionMap.entrySet()) {
@@ -638,7 +667,7 @@ public class AdminPageController {
         if (!selectedPersonIds.isEmpty())
         {
             System.out.println("Selected Person IDs: " + selectedPersonIds);
-            boolean checker = sendPersonIdsToServer(selectedPersonIds, RequestType.DELETE_WORKER);
+            boolean checker = sendPersonIdsToServer(selectedPersonIds, RequestType.DELETE_USER);
             if (checker)
             {
                 Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -647,8 +676,7 @@ public class AdminPageController {
                 successAlert.setContentText("Выбранные работники успешно уволены и удалены из системы.");
                 successAlert.showAndWait();
 
-                hideAllPanels();
-                startPanel.setVisible(true);
+                handleDeleteWorker();
             }
             else
             {
@@ -670,12 +698,14 @@ public class AdminPageController {
         }
     }
 
-    private void handleAboutUs() {
+    private void handleAboutUs()
+    {
         showAboutCompanyPanel();
         System.out.println("About Us clicked.");
     }
 
-    public List<User> getUsersFromServer() {
+    public List<User> getUsersFromServer()
+    {
         List<User> users = new ArrayList<>();
 
         Request request = new Request();
@@ -706,7 +736,8 @@ public class AdminPageController {
         return users;
     }
 
-    public List<Car> getCarsFromServer() {
+    public List<Car> getCarsFromServer()
+    {
         List<Car> cars = new ArrayList<>();
 
         Request request = new Request();
@@ -737,7 +768,8 @@ public class AdminPageController {
         return cars;
     }
 
-    private boolean sendPersonIdsToServer(List<Integer> personIds, RequestType type) {
+    private boolean sendPersonIdsToServer(List<Integer> personIds, RequestType type)
+    {
         Request request = new Request();
         request.setRequestMessage(new Gson().toJson(personIds));
         request.setRequestType(type);
@@ -768,7 +800,8 @@ public class AdminPageController {
         return false;
     }
 
-    private void openFileChooser() {
+    private void openFileChooser()
+    {
         FileChooser fileChooser = new FileChooser();
         fileChooser.setTitle("Выберите изображение");
         FileChooser.ExtensionFilter imageFilter =
@@ -784,7 +817,8 @@ public class AdminPageController {
         }
     }
 
-    private void showAboutCompanyPanel() {
+    private void showAboutCompanyPanel()
+    {
         hideAllPanels();
         aboutUsPanel.setVisible(true);
         developerPane.setVisible(true);
@@ -792,7 +826,8 @@ public class AdminPageController {
         connectionPane.setVisible(true);
     }
 
-    private void hideAllPanels() {
+    private void hideAllPanels()
+    {
         addCarPanel.setVisible(false);
         startPanel.setVisible(false);
         giveRolePanel.setVisible(false);
@@ -809,7 +844,8 @@ public class AdminPageController {
         deleteCarsPanel.setVisible(false);
     }
 
-    private void openAuthorizationWindow() {
+    private void openAuthorizationWindow()
+    {
         try {
             SceneSwitcher.switchSceneStart("authorization.fxml", profile, "Authorization");
         } catch (IOException e) {

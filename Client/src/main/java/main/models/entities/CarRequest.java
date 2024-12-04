@@ -1,19 +1,21 @@
 package main.models.entities;
 
+import main.enums.RequestCarStatus;
+
 public class CarRequest {
     private int idRequest;
     private User user;
     private Car car;
-    private boolean isApproved;
+    private RequestCarStatus status;
 
     public CarRequest() {
     }
 
-    public CarRequest(int idRequest, User user, Car car, boolean isApproved) {
+    public CarRequest(int idRequest, User user, Car car, RequestCarStatus status) {
         this.idRequest = idRequest;
         this.user = user;
         this.car = car;
-        this.isApproved = isApproved;
+        this.status = status;
     }
 
     public int getIdRequest() {
@@ -40,11 +42,11 @@ public class CarRequest {
         this.car = car;
     }
 
-    public boolean isApproved() {
-        return isApproved;
+    public RequestCarStatus getStatus() {
+        return status;
     }
 
-    public void setApproved(boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setStatus(RequestCarStatus status) {
+        this.status = status;
     }
 }

@@ -3,16 +3,10 @@ package main.Utility;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import main.Enums.ResponseStatus;
-import main.Models.Entities.Admin;
-import main.Models.Entities.Car;
-import main.Models.Entities.Person;
-import main.Models.Entities.User;
+import main.Models.Entities.*;
 import main.Models.TCP.Request;
 import main.Models.TCP.Response;
-import main.Services.CarService;
-import main.Services.PersonService;
-import main.Services.RoleService;
-import main.Services.UserService;
+import main.Services.*;
 import org.hibernate.Hibernate;
 
 import java.io.BufferedReader;
@@ -32,6 +26,7 @@ public class ClientThread implements Runnable {
     private PersonService personService = new PersonService();
     private UserService userService = new UserService();
     private RoleService roleService = new RoleService();
+    private CarRequestService carRequestService = new CarRequestService();
     private CarService carService = new CarService();
 
     public ClientThread(Socket clientSocket) throws IOException {
@@ -110,10 +105,10 @@ public class ClientThread implements Runnable {
                         }
                         break;
                     }
-                    case DELETE_WORKER: {
+                    case DELETE_USER: {
                         List<Integer> personIds = new Gson().fromJson(request.getRequestMessage(), new TypeToken<List<Integer>>(){}.getType());
                         try {
-                            personService.deleteWorkers(personIds);
+                            personService.deleteUsers(personIds);
                             response = new Response(ResponseStatus.OK, "Workers deleted successfully", null);
                         } catch (Exception e) {
                             response = new Response(ResponseStatus.ERROR, "Failed to delete workers: " + e.getMessage(), null);
@@ -127,6 +122,16 @@ public class ClientThread implements Runnable {
                             response = new Response(ResponseStatus.OK, "Car added successfully", car);
                         } catch (Exception e) {
                             response = new Response(ResponseStatus.ERROR, "Error in adding car: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case SET_REQUEST_STATUS: {
+                        CarRequest carReq = gson.fromJson(request.getRequestMessage(), CarRequest.class);
+                        try {
+                            carRequestService.updateEntity(carReq);
+                            response = new Response(ResponseStatus.OK, "successfully changed status", carReq);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in changing status: " + e.getMessage(), null);
                         }
                         break;
                     }
@@ -146,6 +151,15 @@ public class ClientThread implements Runnable {
                             response = new Response(ResponseStatus.OK, "Car deleted successfully", car);
                         } catch (Exception e) {
                             response = new Response(ResponseStatus.ERROR, "Error in deleting car: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case GET_CAR_REQUESTS: {
+                        List<CarRequest> carRequests = carRequestService.findAllEntities();
+                        if (carRequests != null && !carRequests.isEmpty()) {
+                            response = new Response(ResponseStatus.OK, "Car requests retrieved successfully", carRequests);
+                        } else {
+                            response = new Response(ResponseStatus.ERROR, "No car requests found", null);
                         }
                         break;
                     }

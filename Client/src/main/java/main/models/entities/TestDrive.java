@@ -1,5 +1,6 @@
 package main.models.entities;
 
+import main.enums.TestDriveStatus;
 import main.models.entities.Car;
 import main.models.entities.User;
 
@@ -14,7 +15,7 @@ public class TestDrive {
     private User user;
 
     private LocalDate driveDate;
-
+    private TestDriveStatus status;
     public int getTestDriveId() {
         return testDriveId;
     }
@@ -42,8 +43,14 @@ public class TestDrive {
     public LocalDate getDriveDate() {
         return driveDate;
     }
-
     public void setDriveDate(LocalDate driveDate) {
         this.driveDate = driveDate;
+    }
+    public TestDriveStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(TestDriveStatus status) {
+        this.status = status;
     }
 }

@@ -1,6 +1,9 @@
 package main.Models.Entities;
 
+import main.Enums.RequestCarStatus;
+
 import javax.persistence.*;
+
 @Entity
 @Table(name = "car_requests")
 public class CarRequest {
@@ -18,17 +21,18 @@ public class CarRequest {
     @JoinColumn(name = "car_id")
     private Car car;
 
-    @Column(name = "is_approved")
-    private boolean isApproved;
+    @Column(name = "status")
+    @Enumerated(EnumType.STRING)
+    private RequestCarStatus status;
 
     public CarRequest() {
     }
 
-    public CarRequest(int idRequest, User user, Car car, boolean isApproved) {
+    public CarRequest(int idRequest, User user, Car car, RequestCarStatus status) {
         this.idRequest = idRequest;
         this.user = user;
         this.car = car;
-        this.isApproved = isApproved;
+        this.status = status;
     }
 
     public int getIdRequest() {
@@ -55,11 +59,11 @@ public class CarRequest {
         this.car = car;
     }
 
-    public boolean isApproved() {
-        return isApproved;
+    public RequestCarStatus getStatus() {
+        return status;
     }
 
-    public void setApproved(boolean isApproved) {
-        this.isApproved = isApproved;
+    public void setStatus(RequestCarStatus status) {
+        this.status = status;
     }
 }

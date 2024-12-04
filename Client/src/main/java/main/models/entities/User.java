@@ -1,9 +1,13 @@
     package main.models.entities;
 
+    import java.time.LocalDate;
+    import java.time.Period;
+
     public class User {
         private int userId;
         private String name;
         private String passportNum;
+        private String gmail;
         private int birthDate;
         private int birthMonth;
         private int birthYear;
@@ -12,16 +16,17 @@
         public User() {
         }
 
-        public User(String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person) {
+        public User(String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person,String gmail) {
             this.name = name;
             this.passportNum = passportNum;
             this.birthDate = birthDate;
             this.birthMonth = birthMonth;
             this.birthYear = birthYear;
             this.person = person;
+            this.gmail = gmail;
         }
 
-        public User(int userId, String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person) {
+        public User(int userId, String name, String passportNum, int birthDate, int birthMonth, int birthYear, Person person,String gmail) {
             this.userId = userId;
             this.name = name;
             this.passportNum = passportNum;
@@ -29,6 +34,7 @@
             this.birthMonth = birthMonth;
             this.birthYear = birthYear;
             this.person = person;
+            this.gmail = gmail;
         }
 
         public int getUserId() {
@@ -49,6 +55,13 @@
 
         public String getPassportNum() {
             return passportNum;
+        }
+        public void setGmail(String gmail) {
+            this.gmail = gmail;
+        }
+
+        public String getGmail() {
+            return this.gmail;
         }
 
         public void setPassportNum(String passportNum) {
@@ -85,5 +98,10 @@
 
         public void setPerson(Person person) {
             this.person = person;
+        }
+        public int calculateAge() {
+            LocalDate birthDate = LocalDate.of(this.birthYear, this.birthMonth, this.birthDate);
+            LocalDate currentDate = LocalDate.now();
+            return Period.between(birthDate, currentDate).getYears();
         }
     }
