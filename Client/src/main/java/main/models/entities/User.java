@@ -99,9 +99,12 @@
         public void setPerson(Person person) {
             this.person = person;
         }
-        public int calculateAge() {
+        public String ageString() {
             LocalDate birthDate = LocalDate.of(this.birthYear, this.birthMonth, this.birthDate);
             LocalDate currentDate = LocalDate.now();
-            return Period.between(birthDate, currentDate).getYears();
+
+            Period period = Period.between(birthDate, currentDate);
+
+            return period.getDays() + "." + period.getMonths() +  "." + period.getYears();
         }
     }

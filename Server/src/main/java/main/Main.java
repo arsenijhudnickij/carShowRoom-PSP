@@ -15,7 +15,6 @@ import java.util.List;
 public class Main {
     public static final int PORT_NUMBER = 3010;
     private static ServerSocket serverSocket;
-
     private static ClientThread clientHandler;
     private static Thread thread;
     private static List<Socket> currentSockets = new ArrayList<Socket>();

@@ -1,6 +1,7 @@
 package main.controllers;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
@@ -15,6 +16,8 @@ import javafx.scene.layout.*;
 import main.enums.RequestCarStatus;
 import main.enums.RequestType;
 import main.enums.ResponseStatus;
+import main.enums.TestDriveStatus;
+import main.models.adapter.LocalDateTimeAdapter;
 import main.models.entities.*;
 import main.models.tcp.Request;
 import main.models.tcp.Response;
@@ -25,6 +28,9 @@ import java.io.BufferedWriter;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Type;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -52,6 +58,8 @@ public class WorkerPageController {
     private AnchorPane checkBidPanel;
     @FXML
     private AnchorPane deleteUserPanel;
+    @FXML
+    private AnchorPane workingWithTestDrive;
 
     @FXML
     private HBox bidWorking;
@@ -96,6 +104,21 @@ public class WorkerPageController {
     private TableColumn<CarRequest, Void> changeStatusColumn;
 
     @FXML
+    private TableView<TestDrive> testDriveTable;
+    @FXML
+    private TableColumn<TestDrive, String> userNameColumnTest;
+    @FXML
+    private TableColumn<TestDrive, String> gmailUserColumnTest;
+    @FXML
+    private TableColumn<TestDrive, String> carNameColumnTest;
+    @FXML
+    private TableColumn<TestDrive, String> testDriveStatusColumn;
+    @FXML
+    private TableColumn<TestDrive, String> testDriveDateColumn;
+    @FXML
+    private TableColumn<TestDrive, Void> changeStatusColumnTest;
+
+    @FXML
     private TableView<CarRequest> bidCheckTable;
     @FXML
     private TableColumn<CarRequest, String> userNameColumnCheck;
@@ -105,6 +128,7 @@ public class WorkerPageController {
     private TableColumn<CarRequest, String> carNameColumnCheck;
     @FXML
     private TableColumn<CarRequest, String> bidStatusColumnCheck;
+
 
     @FXML
     private TableView<User> userTable;
@@ -130,9 +154,11 @@ public class WorkerPageController {
     {
         aboutUs.setOnMouseClicked(event -> handleAboutUs());
         initProfileHandler();
+        initTestDriveTable();
         bidWorking.setOnMouseClicked(event -> handleWorkingWithBid());
         checkRequests.setOnMouseClicked(event -> handleCheckRequests());
         makeReport.setOnMouseClicked(event -> handleMakeReport());
+        testDriveFunc.setOnMouseClicked(event -> handleWorkingWithTestDrive());
         deleteUser.setOnMouseClicked(event -> handleDeleteWorker());
         deleteUserButton.setOnMouseClicked(event -> deleteUsersOnServer(userSelectionMap));
         initBidWorkingTable();
@@ -150,6 +176,7 @@ public class WorkerPageController {
             }
         });
     }
+
     private void handleDeleteWorker()
     {
         hideAllPanels();
@@ -175,6 +202,7 @@ public class WorkerPageController {
             System.out.println("No workers retrieved or an error occurred.");
         }
     }
+
     private void initUserDeleteTable()
     {
         surnameColumn.setCellValueFactory(cellData -> {
@@ -219,6 +247,14 @@ public class WorkerPageController {
         });
     }
 
+    private void handleWorkingWithTestDrive()
+    {
+        hideAllPanels();
+        workingWithTestDrive.setVisible(true);
+        refreshTestDriveTable();
+        System.out.println("Working with test drives clicked.");
+    }
+
     private void handleMakeReport()
     {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -232,7 +268,6 @@ public class WorkerPageController {
                 boolean checker = saveAcceptedCarRequestsToFile(carReq);
                 if (checker) {
                     showSuccessAlert("Успех", "Успешное создание отчета");
-                    refreshCarRequestWorkingTable();
                 } else {
                     showAlert("Ошибка", "Произошла ошибка при создании отчета.");
                 }
@@ -316,6 +351,7 @@ public class WorkerPageController {
             }
         });
     }
+
     private void initBidWorkingTable()
     {
         userNameColumn.setCellValueFactory(cellData ->
@@ -342,8 +378,6 @@ public class WorkerPageController {
                 } else {
                     CarRequest request = getTableView().getItems().get(getIndex());
                     comboBox.setValue(request.getStatus());
-
-                    // Ensure that any change to the ComboBox updates the request's status
                     comboBox.setOnAction(e -> {
                         request.setStatus(comboBox.getValue());
                     });
@@ -381,6 +415,73 @@ public class WorkerPageController {
             }
         });
     }
+    private void initTestDriveTable()
+    {
+        userNameColumnTest.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUser().getName()));
+        gmailUserColumnTest.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUser().getGmail()));
+        carNameColumnTest.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCar().getName()));
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern("dd MMMM yyyy HH:mm");
+
+        testDriveDateColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getDriveDate().format(dateFormatter)));
+        testDriveStatusColumn.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStatus().toString()));
+        testDriveStatusColumn.setCellFactory(column -> new TableCell<TestDrive, String>() {
+            private final ComboBox<TestDriveStatus> comboBox = new ComboBox<>();
+
+            {
+                comboBox.getItems().addAll(TestDriveStatus.values());
+            }
+
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+
+                if (empty || item == null) {
+                    setGraphic(null);
+                } else {
+                    TestDrive testDrive = getTableView().getItems().get(getIndex());
+                    comboBox.setValue(testDrive.getStatus());
+                    comboBox.setOnAction(e -> {
+                        testDrive.setStatus(comboBox.getValue());
+                    });
+
+                    setGraphic(comboBox);
+                }
+            }
+        });
+        changeStatusColumnTest.setCellFactory(column -> new TableCell<TestDrive, Void>() {
+            private final Button btn = new Button("Изменить");
+
+            {
+                btn.setOnAction(e -> {
+                    TestDrive testDrive = getTableView().getItems().get(getIndex());
+                    TestDriveStatus selectedStatus = testDrive.getStatus();
+                    if (selectedStatus == null) {
+                        showAlert("Ошибка", "Статус не может быть пустым.");
+                        return;
+                    }
+
+                    boolean checker = sendTestDriveToServer(testDrive);
+                    if (checker) {
+                        showSuccessAlert("Успешная установка статуса", "Статус изменен на " + selectedStatus);
+                        refreshTestDriveTable();
+                    } else {
+                        showAlert("Ошибка", "Произошла ошибка при выдаче статуса.");
+                    }
+                });
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btn);
+            }
+        });
+    }
     private void initBidTable()
     {
         userNameColumnCheck.setCellValueFactory(cellData ->
@@ -391,27 +492,6 @@ public class WorkerPageController {
                 new SimpleStringProperty(cellData.getValue().getCar().getName()));
         bidStatusColumnCheck.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getStatus().toString()));
-    }
-    private boolean sendRequestToServer(CarRequest request)
-    {
-        Request req = new Request();
-        req.setRequestMessage(new Gson().toJson(request));
-        req.setRequestType(RequestType.SET_REQUEST_STATUS);
-        ClientSocket.getInstance().getOut().println(new Gson().toJson(req));
-        ClientSocket.getInstance().getOut().flush();
-
-        String serverResponse;
-        try {
-            serverResponse = ClientSocket.getInstance().getIn().readLine();
-            if (serverResponse != null) {
-                System.out.println("Response from server: " + serverResponse);
-                Response response = new Gson().fromJson(serverResponse, Response.class);
-                return response.getResponseStatus() == ResponseStatus.OK;
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return false;
     }
     private void showProfilePanel()
     {
@@ -458,6 +538,23 @@ public class WorkerPageController {
             System.out.println("Не удалось загрузить authorization.fxml");
         }
         System.out.println("switch to authorization");
+    }
+    private void refreshTestDriveTable()
+    {
+        List<TestDrive> testDrives = getTestDrivesFromServer();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate minDriveDate = currentDate.plusDays(7);
+
+        LocalDateTime minDriveDateTime = minDriveDate.atStartOfDay();
+
+        List<TestDrive> filteredTestDrives = testDrives.stream()
+                .filter(testDrive -> testDrive.getDriveDate().isAfter(minDriveDateTime) && "NONE".equals(testDrive.getStatus().toString()))
+                .collect(Collectors.toList());
+
+        ObservableList<TestDrive> testDriveObservableList = FXCollections.observableArrayList(filteredTestDrives);
+        testDriveTable.setItems(testDriveObservableList);
+
+        System.out.println("Filtered test drives added to the table: " + filteredTestDrives);
     }
     private void refreshCarRequestWorkingTable()
     {
@@ -543,6 +640,7 @@ public class WorkerPageController {
         workingWithBidPanel.setVisible(false);
         checkBidPanel.setVisible(false);
         deleteUserPanel.setVisible(false);
+        workingWithTestDrive.setVisible(false);
     }
     public List<User> getUsersFromServer()
     {
@@ -574,6 +672,53 @@ public class WorkerPageController {
         }
 
         return users;
+    }
+    public List<TestDrive> getTestDrivesFromServer()
+    {
+        List<TestDrive> testDrives = new ArrayList<>();
+
+        Request request = new Request();
+        request.setRequestMessage("");
+        request.setRequestType(RequestType.GET_TEST_DRIVES);
+
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
+
+        try {
+            ClientSocket.getInstance().getOut().println(gson.toJson(request));
+            ClientSocket.getInstance().getOut().flush();
+
+            // Получение ответа от сервера
+            String responseJson = ClientSocket.getInstance().getIn().readLine();
+            if (responseJson != null) {
+                System.out.println("Response from server: " + responseJson);
+                Response response = gson.fromJson(responseJson, Response.class);
+
+                if (response.getResponseStatus() == ResponseStatus.OK) {
+                    System.out.println("Successfully retrieved test drives.");
+
+                    Type testDriveListType = new TypeToken<List<TestDrive>>() {}.getType();
+
+                    Object dataObject = response.getData();
+                    String dataJson;
+
+                    if (dataObject instanceof String) {
+                        dataJson = (String) dataObject;
+                    } else {
+                        dataJson = gson.toJson(dataObject);
+                    }
+
+                    testDrives = gson.fromJson(dataJson, testDriveListType);
+                } else {
+                    System.out.println("Failed to retrieve test drives: " + response.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return testDrives;
     }
     private void deleteUsersOnServer(Map<User, Boolean> usersSelectionMap)
     {
@@ -647,6 +792,52 @@ public class WorkerPageController {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Error while sending person IDs to server.");
+        }
+        return false;
+    }
+    private boolean sendRequestToServer(CarRequest request)
+    {
+        Request req = new Request();
+        req.setRequestMessage(new Gson().toJson(request));
+        req.setRequestType(RequestType.SET_REQUEST_STATUS);
+        ClientSocket.getInstance().getOut().println(new Gson().toJson(req));
+        ClientSocket.getInstance().getOut().flush();
+
+        String serverResponse;
+        try {
+            serverResponse = ClientSocket.getInstance().getIn().readLine();
+            if (serverResponse != null) {
+                System.out.println("Response from server: " + serverResponse);
+                Response response = new Gson().fromJson(serverResponse, Response.class);
+                return response.getResponseStatus() == ResponseStatus.OK;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return false;
+    }
+    private boolean sendTestDriveToServer(TestDrive testDrive) {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                .create();
+
+        Request req = new Request();
+        req.setRequestMessage(gson.toJson(testDrive));
+        req.setRequestType(RequestType.SET_TEST_DRIVE_STATUS);
+
+        ClientSocket.getInstance().getOut().println(gson.toJson(req));
+        ClientSocket.getInstance().getOut().flush();
+
+        String serverResponse;
+        try {
+            serverResponse = ClientSocket.getInstance().getIn().readLine();
+            if (serverResponse != null) {
+                System.out.println("Response from server: " + serverResponse);
+                Response response = gson.fromJson(serverResponse, Response.class);
+                return response.getResponseStatus() == ResponseStatus.OK;
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
         return false;
     }

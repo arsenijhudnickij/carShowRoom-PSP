@@ -4,13 +4,14 @@ import main.Enums.TestDriveStatus;
 
 import javax.persistence.*;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "test_drive")
 public class TestDrive {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "test_drive_id")
+    @Column(name = "drive_id")
     private int testDriveId;
 
     @ManyToOne(fetch = FetchType.EAGER)
@@ -22,7 +23,7 @@ public class TestDrive {
     private User user;
 
     @Column(name = "drive_date", nullable = false)
-    private LocalDate driveDate;
+    private LocalDateTime driveDate;
 
     @Column(name = "status")
     @Enumerated(EnumType.STRING)
@@ -51,18 +52,16 @@ public class TestDrive {
         this.user = user;
     }
 
-    public LocalDate getDriveDate() {
+    public LocalDateTime getDriveDate() {
         return driveDate;
     }
 
-    public void setDriveDate(LocalDate driveDate) {
+    public void setDriveDate(LocalDateTime driveDate) {
         this.driveDate = driveDate;
     }
-
     public TestDriveStatus getStatus() {
         return status;
     }
-
     public void setStatus(TestDriveStatus status) {
         this.status = status;
     }

@@ -1,11 +1,9 @@
 package main.models.entities;
 
 import main.enums.TestDriveStatus;
-import main.models.entities.Car;
-import main.models.entities.User;
 
 import java.time.LocalDate;
-import java.util.Set;
+import java.time.LocalDateTime;
 
 public class TestDrive {
     private int testDriveId;
@@ -14,7 +12,8 @@ public class TestDrive {
 
     private User user;
 
-    private LocalDate driveDate;
+    private LocalDateTime driveDate;
+
     private TestDriveStatus status;
     public int getTestDriveId() {
         return testDriveId;
@@ -40,16 +39,16 @@ public class TestDrive {
         this.user = user;
     }
 
-    public LocalDate getDriveDate() {
+    public LocalDateTime getDriveDate() {
         return driveDate;
     }
-    public void setDriveDate(LocalDate driveDate) {
+
+    public void setDriveDate(LocalDateTime driveDate) {
         this.driveDate = driveDate;
     }
     public TestDriveStatus getStatus() {
         return status;
     }
-
     public void setStatus(TestDriveStatus status) {
         this.status = status;
     }

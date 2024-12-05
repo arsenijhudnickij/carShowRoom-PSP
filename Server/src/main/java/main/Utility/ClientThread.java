@@ -1,8 +1,10 @@
 package main.Utility;
 
 import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.google.gson.reflect.TypeToken;
 import main.Enums.ResponseStatus;
+import main.Models.Adapter.LocalDateTimeAdapter;
 import main.Models.Entities.*;
 import main.Models.TCP.Request;
 import main.Models.TCP.Response;
@@ -14,6 +16,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class ClientThread implements Runnable {
@@ -28,6 +31,7 @@ public class ClientThread implements Runnable {
     private RoleService roleService = new RoleService();
     private CarRequestService carRequestService = new CarRequestService();
     private CarService carService = new CarService();
+    private TestDriveService testDriveService = new TestDriveService();
 
     public ClientThread(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -132,6 +136,33 @@ public class ClientThread implements Runnable {
                             response = new Response(ResponseStatus.OK, "successfully changed status", carReq);
                         } catch (Exception e) {
                             response = new Response(ResponseStatus.ERROR, "Error in changing status: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case SET_TEST_DRIVE_STATUS: {
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                                .create();
+                        TestDrive testDrive = gson.fromJson(request.getRequestMessage(), TestDrive.class);
+                        try {
+                            testDriveService.updateEntity(testDrive);
+                            response = new Response(ResponseStatus.OK, "successfully changed status", null);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in changing status: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case GET_TEST_DRIVES: {
+                        List<TestDrive> testDrives = testDriveService.findAllEntities();
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                                .create();
+
+                        if (testDrives != null && !testDrives.isEmpty()) {
+                            String json = gson.toJson(testDrives);
+                            response = new Response(ResponseStatus.OK, "Test Drives retrieved successfully", json); // Передаем сериализованный JSON
+                        } else {
+                            response = new Response(ResponseStatus.ERROR, "No test drives found", null);
                         }
                         break;
                     }

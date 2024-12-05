@@ -10,6 +10,9 @@ public enum RequestType {
     ADD_CAR,
     DELETE_CAR,
     GET_CARS,
+    GET_TEST_DRIVES,
     GET_CAR_REQUESTS,
-    SET_REQUEST_STATUS
+    SET_REQUEST_STATUS,
+
+    SET_TEST_DRIVE_STATUS
 }
