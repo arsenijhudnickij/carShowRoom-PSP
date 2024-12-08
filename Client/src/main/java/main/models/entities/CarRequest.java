@@ -17,6 +17,11 @@ public class CarRequest {
         this.car = car;
         this.status = status;
     }
+    public CarRequest(User user, Car car, RequestCarStatus status) {
+        this.user = user;
+        this.car = car;
+        this.status = status;
+    }
 
     public int getIdRequest() {
         return idRequest;

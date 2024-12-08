@@ -32,6 +32,7 @@ public class ClientThread implements Runnable {
     private CarRequestService carRequestService = new CarRequestService();
     private CarService carService = new CarService();
     private TestDriveService testDriveService = new TestDriveService();
+    private FavoriteService favoriteService = new FavoriteService();
 
     public ClientThread(Socket clientSocket) throws IOException {
         this.clientSocket = clientSocket;
@@ -68,6 +69,16 @@ public class ClientThread implements Runnable {
                             response = new Response(ResponseStatus.OK, "Person created", person.getPersonId());
                         } catch (RuntimeException e) {
                             response = new Response(ResponseStatus.ERROR, e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case REGISTRATE_REQUEST: {
+                        CarRequest carReq = gson.fromJson(request.getRequestMessage(), CarRequest.class);
+                        try {
+                            carRequestService.saveEntity(carReq);
+                            response = new Response(ResponseStatus.OK, "successfully reg car Request", carReq);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in reg car Request: " + e.getMessage(), null);
                         }
                         break;
                     }
@@ -149,6 +160,29 @@ public class ClientThread implements Runnable {
                             response = new Response(ResponseStatus.OK, "successfully changed status", null);
                         } catch (Exception e) {
                             response = new Response(ResponseStatus.ERROR, "Error in changing status: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case SAVE_TEST_DRIVE: {
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                                .create();
+                        TestDrive testDrive = gson.fromJson(request.getRequestMessage(), TestDrive.class);
+                        try {
+                            testDriveService.saveEntity(testDrive);
+                            response = new Response(ResponseStatus.OK, "successfully save test drive", null);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in saving test drive: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+                    case ADD_FAVORITE: {
+                        Favorite favorite = gson.fromJson(request.getRequestMessage(), Favorite.class);
+                        try {
+                            favoriteService.saveEntity(favorite);
+                            response = new Response(ResponseStatus.OK, "successfully add favorite", favorite);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in adding favorite: " + e.getMessage(), null);
                         }
                         break;
                     }

@@ -13,6 +13,10 @@ public class Favorite {
         this.user = user;
         this.car = car;
     }
+    public Favorite(User user, Car car) {
+        this.user = user;
+        this.car = car;
+    }
 
     public int getIdFavorite() {
         return idFavorite;

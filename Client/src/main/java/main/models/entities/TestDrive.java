@@ -15,6 +15,19 @@ public class TestDrive {
     private LocalDateTime driveDate;
 
     private TestDriveStatus status;
+    public TestDrive(int testDriveId, Car car, User user, LocalDateTime driveDate, TestDriveStatus status) {
+        this.testDriveId = testDriveId;
+        this.car = car;
+        this.user = user;
+        this.driveDate = driveDate;
+        this.status = status;
+    }
+    public TestDrive( Car car, User user, LocalDateTime driveDate, TestDriveStatus status) {
+        this.car = car;
+        this.user = user;
+        this.driveDate = driveDate;
+        this.status = status;
+    }
     public int getTestDriveId() {
         return testDriveId;
     }

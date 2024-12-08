@@ -208,7 +208,6 @@ public class AuthorizationController {
         return null;
     }
 
-
     private void openWindow(String fxmlFile, String windowTitle)
     {
         try {
@@ -218,6 +217,7 @@ public class AuthorizationController {
             System.out.println("Не удалось загрузить файл " + fxmlFile);
         }
     }
+
     private void openRegistrationWindow()
     {
         try {

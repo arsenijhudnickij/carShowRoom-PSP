@@ -7,10 +7,19 @@ import javafx.beans.property.SimpleStringProperty;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.geometry.Insets;
+import javafx.geometry.Pos;
+import javafx.scene.Scene;
 import javafx.scene.control.*;
+import javafx.scene.image.ImageView;
 import javafx.scene.layout.AnchorPane;
+import javafx.scene.layout.GridPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
+import javafx.scene.paint.Color;
 import javafx.stage.FileChooser;
+import javafx.stage.Modality;
+import javafx.stage.Stage;
 import main.enums.RequestType;
 import main.enums.ResponseStatus;
 import main.models.entities.*;
@@ -43,6 +52,8 @@ public class AdminPageController {
     @FXML
     private HBox deleteCar;
     @FXML
+    private VBox carsContainer;
+    @FXML
     private ComboBox<String> checkCar;
     @FXML
     private ComboBox<String> profile;
@@ -67,9 +78,9 @@ public class AdminPageController {
     @FXML
     private AnchorPane aboutUsPanel;
     @FXML
-    private AnchorPane myprofilePanel;
-    @FXML
     private AnchorPane viewCarsPanel;
+    @FXML
+    private AnchorPane myprofilePanel;
     @FXML
     private AnchorPane profilePanel;
     @FXML
@@ -150,9 +161,23 @@ public class AdminPageController {
     @FXML
     public void initialize()
     {
+        checkCar.setOnAction(event -> handleCarSelection());
+        checkCar.setButtonCell(new ListCell<>() {
+            @Override
+            protected void updateItem(String item, boolean empty) {
+                super.updateItem(item, empty);
+                if (item == null || empty) {
+                    setText(profile.getPromptText());
+                } else {
+                    setText(item);
+                }
+            }
+        });
+
         setButtonCellForComboBox(profile);
         setButtonCellForComboBox(petrolType);
         setButtonCellForComboBox(carType);
+        setButtonCellForComboBox(checkCar);
 
         surnameColumn.setCellValueFactory(cellData -> {
             String fullName = cellData.getValue().getName();
@@ -853,5 +878,146 @@ public class AdminPageController {
             System.out.println("Не удалось загрузить authorization.fxml");
         }
         System.out.println("switch to authorization");
+    }
+    private void handleCarSelection() {
+        hideAllPanels();
+        viewCarsPanel.setVisible(true);
+        String selectedOption = checkCar.getValue();
+        List<Car> cars = getCarsFromServer();
+        List<Car> carsCopy = new ArrayList<>(cars);
+        if ("Просмотр всех автомобилей".equals(selectedOption)) {
+            displayCars(cars);
+        } else if ("От самого дешевого к самому дорогому".equals(selectedOption)) {
+            carsCopy.sort((car1, car2) -> Double.compare(car1.getCost(), car2.getCost()));
+            displayCars(carsCopy);
+        } else if ("От самого дорогого к самому дешевому".equals(selectedOption)) {
+            carsCopy.sort((car1, car2) -> Double.compare(car2.getCost(), car1.getCost()));
+            displayCars(carsCopy);
+        }
+    }
+    private void displayCars(List<Car> cars) {
+        carsContainer.getChildren().clear();
+
+        GridPane gridPane = new GridPane();
+        gridPane.setHgap(250);
+        gridPane.setVgap(50);
+        gridPane.setAlignment(Pos.TOP_CENTER);
+        gridPane.setStyle("-fx-padding: 20;");
+
+        int column = 0;
+        int row = 0;
+
+        for (Car car : cars) {
+            AnchorPane carPane = createCarPane(car);
+            gridPane.add(carPane, column, row);
+
+            column++;
+            if (column >= 2) {
+                column = 0;
+                row++;
+            }
+        }
+
+        carsContainer.getChildren().add(gridPane);
+    }
+
+    private AnchorPane createCarPane(Car car) {
+        AnchorPane carPane = new AnchorPane();
+        carPane.setPrefSize(400, 450);
+        carPane.setStyle("-fx-background-color: #333333; -fx-padding: 10; -fx-border-radius: 10; -fx-background-radius: 10;");
+
+        AnchorPane.setTopAnchor(carPane, 50.0);
+        AnchorPane.setLeftAnchor(carPane, (800 - carPane.getPrefWidth()) / 2);
+
+        ImageView carImageView = new ImageView("file:///" + car.getImagePath());
+        carImageView.setFitHeight(200);
+        carImageView.setFitWidth(200);
+        carImageView.setLayoutX((carPane.getPrefWidth() - carImageView.getFitWidth()) / 2);
+        carImageView.setLayoutY(20);
+        carPane.getChildren().add(carImageView);
+
+        Label carNameLabel = new Label(car.getName());
+        carNameLabel.setTextFill(Color.WHITE);
+        carNameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 25px;");
+        carNameLabel.setLayoutX(10);
+        carNameLabel.setLayoutY(240);
+        carPane.getChildren().add(carNameLabel);
+
+        Label carCostLabel = new Label("Цена: " + car.getCost() + " $");
+        carCostLabel.setTextFill(Color.WHITE);
+        carCostLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        carCostLabel.setLayoutX(10);
+        carCostLabel.setLayoutY(280);
+        carPane.getChildren().add(carCostLabel);
+
+        Label carTypeLabel = new Label("Тип: " + car.getCarType().getTypeName());
+        carTypeLabel.setTextFill(Color.WHITE);
+        carTypeLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 18px;");
+        carTypeLabel.setLayoutX(10);
+        carTypeLabel.setLayoutY(320);
+        carPane.getChildren().add(carTypeLabel);
+
+        Button detailsButton = new Button("Подробная информация");
+        detailsButton.setLayoutX(10);
+        detailsButton.setLayoutY(370);
+        carPane.getChildren().add(detailsButton);
+
+
+        detailsButton.setOnAction(event -> showCarDetailsModal(car));
+
+        return carPane;
+    }
+    private void showCarDetailsModal(Car car) {
+        Stage modalStage = new Stage();
+        modalStage.initModality(Modality.APPLICATION_MODAL);
+        modalStage.setTitle("Подробная информация об автомобиле");
+
+        VBox detailsContainer = new VBox(10);
+        detailsContainer.setPadding(new Insets(20));
+        detailsContainer.setStyle("-fx-background-color: #282828; -fx-border-radius: 10; -fx-background-radius: 10;");
+        detailsContainer.setAlignment(Pos.CENTER_LEFT);
+
+
+        Label nameLabel = new Label("Название: " + car.getName());
+        nameLabel.setTextFill(Color.WHITE);
+        nameLabel.setStyle("-fx-font-weight: bold; -fx-font-size: 16px;");
+
+        Label costLabel = new Label("Цена: " + car.getCost() + " $");
+        costLabel.setTextFill(Color.WHITE);
+        costLabel.setStyle("-fx-font-size: 14px;");
+
+        Label typeLabel = new Label("Тип: " + car.getCarType().getTypeName());
+        typeLabel.setTextFill(Color.WHITE);
+        typeLabel.setStyle("-fx-font-size: 14px;");
+
+        Label speedLabel = new Label("Максимальная скорость: " + car.getHighSpeed() + " км/ч");
+        speedLabel.setTextFill(Color.WHITE);
+        speedLabel.setStyle("-fx-font-size: 14px;");
+
+        Label petrolLabel = new Label("Тип топлива: " + car.getPetrolType());
+        petrolLabel.setTextFill(Color.WHITE);
+        petrolLabel.setStyle("-fx-font-size: 14px;");
+
+        Label powerLabel = new Label("Мощность: " + car.getPower() + " л.с.");
+        powerLabel.setTextFill(Color.WHITE);
+        powerLabel.setStyle("-fx-font-size: 14px;");
+
+        detailsContainer.getChildren().addAll(
+                nameLabel, costLabel, typeLabel, speedLabel,
+                petrolLabel, powerLabel
+        );
+
+        Button closeButton = new Button("Закрыть");
+        closeButton.setOnAction(event -> modalStage.close());
+        closeButton.setAlignment(Pos.CENTER);
+
+        VBox modalContent = new VBox(20, detailsContainer, closeButton);
+        modalContent.setAlignment(Pos.CENTER);
+        modalContent.setPadding(new Insets(20));
+
+        Scene modalScene = new Scene(modalContent, 400, 400);
+        modalStage.setScene(modalScene);
+
+        modalStage.showAndWait();
     }
 }
