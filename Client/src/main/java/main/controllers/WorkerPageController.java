@@ -85,6 +85,9 @@ public class WorkerPageController {
     private VBox carsContainer;
 
     @FXML
+    private Label header;
+
+    @FXML
     private Button aboutUs;
 
     @FXML
@@ -142,7 +145,6 @@ public class WorkerPageController {
     private TableColumn<CarRequest, String> carNameColumnCheck;
     @FXML
     private TableColumn<CarRequest, String> bidStatusColumnCheck;
-
 
     @FXML
     private TableView<User> userTable;
@@ -215,6 +217,7 @@ public class WorkerPageController {
         });
     }
 
+    //delete worker
     private void handleDeleteWorker()
     {
         hideAllPanels();
@@ -240,7 +243,6 @@ public class WorkerPageController {
             System.out.println("No workers retrieved or an error occurred.");
         }
     }
-
     private void initUserDeleteTable()
     {
         surnameColumn.setCellValueFactory(cellData -> {
@@ -285,14 +287,8 @@ public class WorkerPageController {
         });
     }
 
-    private void handleWorkingWithTestDrive()
-    {
-        hideAllPanels();
-        workingWithTestDrive.setVisible(true);
-        refreshTestDriveTable();
-        System.out.println("Working with test drives clicked.");
-    }
 
+    //making report
     private void handleMakeReport()
     {
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
@@ -312,48 +308,8 @@ public class WorkerPageController {
             }
         });
     }
-    public boolean saveAcceptedCarRequestsToFile(List<CarRequest> carRequests)
-    {
-        String fileName = "report.txt";
-        double totalCost = 0;
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
-            for (CarRequest request : carRequests) {
-                if (request.getStatus() == RequestCarStatus.ACCEPT) {
-                    Car car = request.getCar();
-                    User user = request.getUser();
-                    writer.write("ID заявки: " + request.getIdRequest());
-                    writer.newLine();
-                    writer.write("Имя клиента: " + user.getName());
-                    writer.newLine();
-                    writer.write("Номер паспорта клиента: " + user.getPassportNum());
-                    writer.newLine();
-                    writer.write("Почта клиента: " + user.getGmail());
-                    writer.newLine();
-                    writer.write("Название машины: " + car.getName());
-                    writer.newLine();
-                    writer.write("Тип машины: " + car.getCarType());
-                    writer.newLine();
-                    writer.write("Цена машины: " + car.getCost());
-                    writer.newLine();
-                    writer.write("----------------------------------------------");
-                    writer.newLine();
-
-                    totalCost += car.getCost();
-                }
-            }
-
-            writer.newLine();
-            writer.write("Полная стоимость всех машин из заявок: " + totalCost);
-            writer.newLine();
-            writer.flush();
-            System.out.println("Data successfully written to " + fileName);
-            return true;
-        } catch (IOException e) {
-            e.printStackTrace();
-            return false;
-        }
-    }
+    //view about us
     private void handleAboutUs()
     {
         hideAllPanels();
@@ -363,6 +319,8 @@ public class WorkerPageController {
         connectionPane.setVisible(true);
         System.out.println("About Us clicked.");
     }
+
+    //check requests
     private void handleCheckRequests()
     {
         hideAllPanels();
@@ -370,6 +328,16 @@ public class WorkerPageController {
         refreshCarRequestTable();
         System.out.println("Check requests clicked.");
     }
+    private void refreshCarRequestTable()
+    {
+        List<CarRequest> carRequests = getCarRequestsFromServer();
+        ObservableList<CarRequest> carRequestObservableList = FXCollections.observableArrayList(carRequests);
+        bidCheckTable.setItems(carRequestObservableList);
+
+        System.out.println("All requests added to the table: " + carRequests);
+    }
+
+    //working with bid
     private void handleWorkingWithBid()
     {
         hideAllPanels();
@@ -377,19 +345,17 @@ public class WorkerPageController {
         refreshCarRequestWorkingTable();
         System.out.println("Working with requests clicked.");
     }
-    private void initProfileHandler()
+    private void initBidTable()
     {
-        profile.setOnAction(event -> {
-            String selectedItem = profile.getValue();
-            if ("Выход".equals(selectedItem)) {
-                showLogoutConfirmation();
-            } else if ("Мой профиль".equals(selectedItem)) {
-                showProfilePanel();
-                profile.setValue(null);
-            }
-        });
+        userNameColumnCheck.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUser().getName()));
+        gmailUserColumnCheck.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getUser().getGmail()));
+        carNameColumnCheck.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getCar().getName()));
+        bidStatusColumnCheck.setCellValueFactory(cellData ->
+                new SimpleStringProperty(cellData.getValue().getStatus().toString()));
     }
-
     private void initBidWorkingTable()
     {
         userNameColumn.setCellValueFactory(cellData ->
@@ -453,8 +419,71 @@ public class WorkerPageController {
             }
         });
     }
-    private void initTestDriveTable()
+    private void refreshCarRequestWorkingTable()
     {
+        List<CarRequest> carRequests = getCarRequestsFromServer();
+
+        List<CarRequest> filteredRequests = carRequests.stream()
+                .filter(request -> request.getStatus() == RequestCarStatus.NONE || request.getStatus() == RequestCarStatus.WAIT)
+                .collect(Collectors.toList());
+
+        if (!filteredRequests.isEmpty()) {
+            ObservableList<CarRequest> carRequestObservableList = FXCollections.observableArrayList(filteredRequests);
+            bidTable.setItems(carRequestObservableList);
+
+            System.out.println("Filtered requests added to the table: " + filteredRequests);
+        } else {
+            bidTable.setItems(FXCollections.observableArrayList());
+            System.out.println("No requests with status NONE or WAIT found.");
+        }
+    }
+
+    //profile working
+    private void initProfileHandler()
+    {
+        profile.setOnAction(event -> {
+            String selectedItem = profile.getValue();
+            if ("Выход".equals(selectedItem)) {
+                showLogoutConfirmation();
+            } else if ("Мой профиль".equals(selectedItem)) {
+                showProfilePanel();
+                profile.setValue(null);
+            }
+        });
+    }
+
+    //working with test drives
+    private void handleWorkingWithTestDrive()
+    {
+        hideAllPanels();
+        workingWithTestDrive.setVisible(true);
+        refreshTestDriveTable();
+        System.out.println("Working with test drives clicked.");
+    }
+    private void refreshTestDriveTable() {
+        List<TestDrive> testDrives = getTestDrivesFromServer();
+        LocalDate currentDate = LocalDate.now();
+        LocalDate minDriveDate = currentDate.plusDays(7);
+        LocalDateTime minDriveDateTime = minDriveDate.atStartOfDay();
+
+        List<TestDrive> editableTestDrives = testDrives.stream()
+                .filter(testDrive -> testDrive.getDriveDate().isAfter(minDriveDateTime) && "NONE".equals(testDrive.getStatus().toString()))
+                .collect(Collectors.toList());
+
+        List<TestDrive> readOnlyTestDrives = testDrives.stream()
+                .filter(testDrive -> testDrive.getDriveDate().isAfter(minDriveDateTime) && !"NONE".equals(testDrive.getStatus().toString()))
+                .collect(Collectors.toList());
+
+        List<TestDrive> combinedTestDrives = new ArrayList<>(editableTestDrives);
+        combinedTestDrives.addAll(readOnlyTestDrives);
+
+        ObservableList<TestDrive> testDriveObservableList = FXCollections.observableArrayList(combinedTestDrives);
+        testDriveTable.setItems(testDriveObservableList);
+
+        System.out.println("Filtered test drives added to the table: " + combinedTestDrives);
+    }
+
+    private void initTestDriveTable() {
         userNameColumnTest.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getUser().getName()));
         gmailUserColumnTest.setCellValueFactory(cellData ->
@@ -467,6 +496,7 @@ public class WorkerPageController {
                 new SimpleStringProperty(cellData.getValue().getDriveDate().format(dateFormatter)));
         testDriveStatusColumn.setCellValueFactory(cellData ->
                 new SimpleStringProperty(cellData.getValue().getStatus().toString()));
+
         testDriveStatusColumn.setCellFactory(column -> new TableCell<TestDrive, String>() {
             private final ComboBox<TestDriveStatus> comboBox = new ComboBox<>();
 
@@ -482,15 +512,20 @@ public class WorkerPageController {
                     setGraphic(null);
                 } else {
                     TestDrive testDrive = getTableView().getItems().get(getIndex());
-                    comboBox.setValue(testDrive.getStatus());
-                    comboBox.setOnAction(e -> {
-                        testDrive.setStatus(comboBox.getValue());
-                    });
-
-                    setGraphic(comboBox);
+                    if ("NONE".equals(testDrive.getStatus().toString())) {
+                        comboBox.setValue(testDrive.getStatus());
+                        comboBox.setOnAction(e -> {
+                            testDrive.setStatus(comboBox.getValue());
+                        });
+                        setGraphic(comboBox);
+                    } else {
+                        setText(testDrive.getStatus().toString());
+                        setGraphic(null);
+                    }
                 }
             }
         });
+
         changeStatusColumnTest.setCellFactory(column -> new TableCell<TestDrive, Void>() {
             private final Button btn = new Button("Изменить");
 
@@ -520,136 +555,8 @@ public class WorkerPageController {
             }
         });
     }
-    private void initBidTable()
-    {
-        userNameColumnCheck.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getUser().getName()));
-        gmailUserColumnCheck.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getUser().getGmail()));
-        carNameColumnCheck.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getCar().getName()));
-        bidStatusColumnCheck.setCellValueFactory(cellData ->
-                new SimpleStringProperty(cellData.getValue().getStatus().toString()));
-    }
-    private void showProfilePanel()
-    {
-        hideAllPanels();
-        profilePanel.setVisible(true);
-        myprofilePanel.setVisible(true);
 
-        User user = Session.getUser();
-        if (user != null) {
-            roleLabel.setText(user.getPerson().getRole().getRoleName().toString());
-            loginLabel.setText(user.getPerson().getLogin());
-            FIOLabel.setText(user.getName());
-            String formattedBirthDate = user.getBirthDate() + "." + user.getBirthMonth() + "." + user.getBirthYear();
-            birthDate.setText(formattedBirthDate);
-            passportNumber.setText(user.getPassportNum());
-            gmailLabel.setText(user.getGmail());
-        } else {
-            System.out.println("No information about worker");
-        }
-    }
-    private void showLogoutConfirmation()
-    {
-        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setTitle("Подтверждение выхода");
-        alert.setHeaderText("Вы уверены, что хотите выйти?");
-        alert.setContentText("Нажмите ОК для выхода или Отмена для возврата.");
-
-        alert.showAndWait().ifPresent(response -> {
-            if (response == ButtonType.OK) {
-                Session.clearSession();
-                System.out.println("Admin logged out.");
-                openAuthorizationWindow();
-            } else {
-                profile.setValue("Мой профиль");
-            }
-        });
-    }
-    private void openAuthorizationWindow()
-    {
-        try {
-            SceneSwitcher.switchSceneStart("authorization.fxml", profile, "Authorization");
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.out.println("Не удалось загрузить authorization.fxml");
-        }
-        System.out.println("switch to authorization");
-    }
-    private void refreshTestDriveTable()
-    {
-        List<TestDrive> testDrives = getTestDrivesFromServer();
-        LocalDate currentDate = LocalDate.now();
-        LocalDate minDriveDate = currentDate.plusDays(7);
-
-        LocalDateTime minDriveDateTime = minDriveDate.atStartOfDay();
-
-        List<TestDrive> filteredTestDrives = testDrives.stream()
-                .filter(testDrive -> testDrive.getDriveDate().isAfter(minDriveDateTime) && "NONE".equals(testDrive.getStatus().toString()))
-                .collect(Collectors.toList());
-
-        ObservableList<TestDrive> testDriveObservableList = FXCollections.observableArrayList(filteredTestDrives);
-        testDriveTable.setItems(testDriveObservableList);
-
-        System.out.println("Filtered test drives added to the table: " + filteredTestDrives);
-    }
-    private void refreshCarRequestWorkingTable()
-    {
-        List<CarRequest> carRequests = getCarRequestsFromServer();
-
-        List<CarRequest> filteredRequests = carRequests.stream()
-                .filter(request -> request.getStatus() == RequestCarStatus.NONE || request.getStatus() == RequestCarStatus.WAIT)
-                .collect(Collectors.toList());
-
-        if (!filteredRequests.isEmpty()) {
-            ObservableList<CarRequest> carRequestObservableList = FXCollections.observableArrayList(filteredRequests);
-            bidTable.setItems(carRequestObservableList);
-
-            System.out.println("Filtered requests added to the table: " + filteredRequests);
-        } else {
-            bidTable.setItems(FXCollections.observableArrayList());
-            System.out.println("No requests with status NONE or WAIT found.");
-        }
-    }
-    private void refreshCarRequestTable()
-    {
-        List<CarRequest> carRequests = getCarRequestsFromServer();
-        ObservableList<CarRequest> carRequestObservableList = FXCollections.observableArrayList(carRequests);
-        bidCheckTable.setItems(carRequestObservableList);
-
-        System.out.println("All requests added to the table: " + carRequests);
-    }
-    public List<CarRequest> getCarRequestsFromServer()
-    {
-        List<CarRequest> carRequests = new ArrayList<>();
-
-        Request request = new Request();
-        request.setRequestMessage("");
-        request.setRequestType(RequestType.GET_CAR_REQUESTS);
-        try {
-            ClientSocket.getInstance().getOut().println(new Gson().toJson(request));
-            ClientSocket.getInstance().getOut().flush();
-
-            String responseJson = ClientSocket.getInstance().getIn().readLine();
-            if (responseJson != null) {
-                System.out.println("Response from server: " + responseJson);
-                Response response = new Gson().fromJson(responseJson, Response.class);
-
-                if (response.getResponseStatus() == ResponseStatus.OK) {
-                    System.out.println("Successfully retrieved car requests.");
-                    Type carRequestListType = new TypeToken<List<CarRequest>>() {}.getType();
-                    carRequests = new Gson().fromJson(new Gson().toJson(response.getData()), carRequestListType);
-                } else {
-                    System.out.println("Failed to retrieve car requests: " + response.getMessage());
-                }
-            }
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        return carRequests;
-    }
+    //visual part
     private void showSuccessAlert(String title, String message)
     {
         Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
@@ -681,6 +588,56 @@ public class WorkerPageController {
         workingWithTestDrive.setVisible(false);
         viewCarsPanel.setVisible(false);
     }
+    private void showProfilePanel()
+    {
+        hideAllPanels();
+        profilePanel.setVisible(true);
+        myprofilePanel.setVisible(true);
+
+        User user = Session.getUser();
+        if (user != null) {
+            roleLabel.setText(user.getPerson().getRole().getRoleName().toString());
+            loginLabel.setText(user.getPerson().getLogin());
+            FIOLabel.setText(user.getName());
+            String formattedBirthDate = user.getBirthDate() + "." + user.getBirthMonth() + "." + user.getBirthYear();
+            birthDate.setText(formattedBirthDate);
+            passportNumber.setText(user.getPassportNum());
+            gmailLabel.setText(user.getGmail());
+        } else {
+            System.out.println("No information about worker");
+        }
+    }
+
+    //open windows
+    private void showLogoutConfirmation()
+    {
+        Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
+        alert.setTitle("Подтверждение выхода");
+        alert.setHeaderText("Вы уверены, что хотите выйти?");
+        alert.setContentText("Нажмите ОК для выхода или Отмена для возврата.");
+
+        alert.showAndWait().ifPresent(response -> {
+            if (response == ButtonType.OK) {
+                Session.clearSession();
+                System.out.println("Admin logged out.");
+                openAuthorizationWindow();
+            } else {
+                profile.setValue("Мой профиль");
+            }
+        });
+    }
+    private void openAuthorizationWindow()
+    {
+        try {
+            SceneSwitcher.switchSceneStart("authorization.fxml", profile, "Authorization");
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.out.println("Не удалось загрузить authorization.fxml");
+        }
+        System.out.println("switch to authorization");
+    }
+
+    //server part
     public List<User> getUsersFromServer()
     {
         List<User> users = new ArrayList<>();
@@ -711,6 +668,78 @@ public class WorkerPageController {
         }
 
         return users;
+    }
+    public boolean saveAcceptedCarRequestsToFile(List<CarRequest> carRequests)
+    {
+        String fileName = "report.txt";
+        double totalCost = 0;
+
+        try (BufferedWriter writer = new BufferedWriter(new FileWriter(fileName))) {
+            for (CarRequest request : carRequests) {
+                if (request.getStatus() == RequestCarStatus.ACCEPT) {
+                    Car car = request.getCar();
+                    User user = request.getUser();
+                    writer.write("ID заявки: " + request.getIdRequest());
+                    writer.newLine();
+                    writer.write("Имя клиента: " + user.getName());
+                    writer.newLine();
+                    writer.write("Номер паспорта клиента: " + user.getPassportNum());
+                    writer.newLine();
+                    writer.write("Почта клиента: " + user.getGmail());
+                    writer.newLine();
+                    writer.write("Название машины: " + car.getName());
+                    writer.newLine();
+                    writer.write("Тип машины: " + car.getCarType());
+                    writer.newLine();
+                    writer.write("Цена машины: " + car.getCost());
+                    writer.newLine();
+                    writer.write("----------------------------------------------");
+                    writer.newLine();
+
+                    totalCost += car.getCost();
+                }
+            }
+
+            writer.newLine();
+            writer.write("Полная стоимость всех машин из заявок: " + totalCost);
+            writer.newLine();
+            writer.flush();
+            System.out.println("Data successfully written to " + fileName);
+            return true;
+        } catch (IOException e) {
+            e.printStackTrace();
+            return false;
+        }
+    }
+    public List<CarRequest> getCarRequestsFromServer()
+    {
+        List<CarRequest> carRequests = new ArrayList<>();
+
+        Request request = new Request();
+        request.setRequestMessage("");
+        request.setRequestType(RequestType.GET_CAR_REQUESTS);
+        try {
+            ClientSocket.getInstance().getOut().println(new Gson().toJson(request));
+            ClientSocket.getInstance().getOut().flush();
+
+            String responseJson = ClientSocket.getInstance().getIn().readLine();
+            if (responseJson != null) {
+                System.out.println("Response from server: " + responseJson);
+                Response response = new Gson().fromJson(responseJson, Response.class);
+
+                if (response.getResponseStatus() == ResponseStatus.OK) {
+                    System.out.println("Successfully retrieved car requests.");
+                    Type carRequestListType = new TypeToken<List<CarRequest>>() {}.getType();
+                    carRequests = new Gson().fromJson(new Gson().toJson(response.getData()), carRequestListType);
+                } else {
+                    System.out.println("Failed to retrieve car requests: " + response.getMessage());
+                }
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        return carRequests;
     }
     public List<TestDrive> getTestDrivesFromServer()
     {
@@ -855,7 +884,8 @@ public class WorkerPageController {
         }
         return false;
     }
-    private boolean sendTestDriveToServer(TestDrive testDrive) {
+    private boolean sendTestDriveToServer(TestDrive testDrive)
+    {
         Gson gson = new GsonBuilder()
                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
                 .create();
@@ -879,23 +909,6 @@ public class WorkerPageController {
             e.printStackTrace();
         }
         return false;
-    }
-
-    private void handleCarSelection() {
-        hideAllPanels();
-        viewCarsPanel.setVisible(true);
-        String selectedOption = checkCar.getValue();
-        List<Car> cars = getCarsFromServer();
-        List<Car> carsCopy = new ArrayList<>(cars);
-        if ("Просмотр всех автомобилей".equals(selectedOption)) {
-            displayCars(cars);
-        } else if ("От самого дешевого к самому дорогому".equals(selectedOption)) {
-            carsCopy.sort((car1, car2) -> Double.compare(car1.getCost(), car2.getCost()));
-            displayCars(carsCopy);
-        } else if ("От самого дорогого к самому дешевому".equals(selectedOption)) {
-            carsCopy.sort((car1, car2) -> Double.compare(car2.getCost(), car1.getCost()));
-            displayCars(carsCopy);
-        }
     }
     public List<Car> getCarsFromServer()
     {
@@ -929,7 +942,32 @@ public class WorkerPageController {
         return cars;
     }
 
-    private void displayCars(List<Car> cars) {
+    //all for view cars
+    private void handleCarSelection() {
+        hideAllPanels();
+        viewCarsPanel.setVisible(true);
+        String selectedOption = checkCar.getValue();
+        List<Car> cars = getCarsFromServer();
+        List<Car> carsCopy = new ArrayList<>(cars);
+        if ("Просмотр всех автомобилей".equals(selectedOption)) {
+            header.setText("Наши автомобили");
+            header.setTranslateX(40);
+            displayCars(cars);
+        } else if ("От самого дешевого к самому дорогому".equals(selectedOption)) {
+            carsCopy.sort((car1, car2) -> Double.compare(car1.getCost(), car2.getCost()));
+            header.setText("От самого дешевого к самому дорогому");
+            header.setTranslateX(-40);
+            displayCars(carsCopy);
+        } else if ("От самого дорогого к самому дешевому".equals(selectedOption)) {
+            carsCopy.sort((car1, car2) -> Double.compare(car2.getCost(), car1.getCost()));
+            displayCars(carsCopy);
+            header.setText("От самого дорогого к самому дешевому");
+            header.setTranslateX(-40);
+        }
+        checkCar.setValue(null);
+    }
+    private void displayCars(List<Car> cars)
+    {
         carsContainer.getChildren().clear();
 
         GridPane gridPane = new GridPane();
@@ -954,8 +992,8 @@ public class WorkerPageController {
 
         carsContainer.getChildren().add(gridPane);
     }
-
-    private AnchorPane createCarPane(Car car) {
+    private AnchorPane createCarPane(Car car)
+    {
         AnchorPane carPane = new AnchorPane();
         carPane.setPrefSize(400, 450);
         carPane.setStyle("-fx-background-color: #333333; -fx-padding: 10; -fx-border-radius: 10; -fx-background-radius: 10;");
@@ -965,7 +1003,7 @@ public class WorkerPageController {
 
         ImageView carImageView = new ImageView("file:///" + car.getImagePath());
         carImageView.setFitHeight(200);
-        carImageView.setFitWidth(200);
+        carImageView.setFitWidth(250);
         carImageView.setLayoutX((carPane.getPrefWidth() - carImageView.getFitWidth()) / 2);
         carImageView.setLayoutY(20);
         carPane.getChildren().add(carImageView);
@@ -995,13 +1033,14 @@ public class WorkerPageController {
         detailsButton.setLayoutX(10);
         detailsButton.setLayoutY(370);
         carPane.getChildren().add(detailsButton);
-
+        detailsButton.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 5 10;");
 
         detailsButton.setOnAction(event -> showCarDetailsModal(car));
 
         return carPane;
     }
-    private void showCarDetailsModal(Car car) {
+    private void showCarDetailsModal(Car car)
+    {
         Stage modalStage = new Stage();
         modalStage.initModality(Modality.APPLICATION_MODAL);
         modalStage.setTitle("Подробная информация об автомобиле");

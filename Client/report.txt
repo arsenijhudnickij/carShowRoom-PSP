@@ -3,7 +3,7 @@ ID заявки: 1
 Номер паспорта клиента: KN675423
 Почта клиента: maksimka@gmail.com
 Название машины: Toyota Camry
-Тип машины: main.models.entities.CarType@5b24d587
+Тип машины: main.models.entities.CarType@2b255db1
 Цена машины: 10000.0
 ----------------------------------------------
 

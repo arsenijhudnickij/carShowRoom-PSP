@@ -163,6 +163,19 @@ public class ClientThread implements Runnable {
                         }
                         break;
                     }
+                    case DELETE_TEST_DRIVE: {
+                        Gson gson = new GsonBuilder()
+                                .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
+                                .create();
+                        TestDrive testDrive = gson.fromJson(request.getRequestMessage(), TestDrive.class);
+                        try {
+                            testDriveService.deleteEntity(testDrive);
+                            response = new Response(ResponseStatus.OK, "successfully delete", null);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in delete: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
                     case SAVE_TEST_DRIVE: {
                         Gson gson = new GsonBuilder()
                                 .registerTypeAdapter(LocalDateTime.class, new LocalDateTimeAdapter())
@@ -186,6 +199,18 @@ public class ClientThread implements Runnable {
                         }
                         break;
                     }
+                    case DELETE_FAVORITE: {
+                        Favorite favorite = gson.fromJson(request.getRequestMessage(), Favorite.class);
+                        try {
+                            favoriteService.deleteEntity(favorite);
+                            response = new Response(ResponseStatus.OK, "successfully delete favorite",null);
+                        } catch (Exception e) {
+                            response = new Response(ResponseStatus.ERROR, "Error in deleting favorite: " + e.getMessage(), null);
+                        }
+                        break;
+                    }
+
+
                     case GET_TEST_DRIVES: {
                         List<TestDrive> testDrives = testDriveService.findAllEntities();
                         Gson gson = new GsonBuilder()
@@ -223,6 +248,15 @@ public class ClientThread implements Runnable {
                         List<CarRequest> carRequests = carRequestService.findAllEntities();
                         if (carRequests != null && !carRequests.isEmpty()) {
                             response = new Response(ResponseStatus.OK, "Car requests retrieved successfully", carRequests);
+                        } else {
+                            response = new Response(ResponseStatus.ERROR, "No car requests found", null);
+                        }
+                        break;
+                    }
+                    case GET_FAVORITES: {
+                        List<Favorite> favorites = favoriteService.findAllEntities();
+                        if (favorites != null && !favorites.isEmpty()) {
+                            response = new Response(ResponseStatus.OK, "favorites retrieved successfully", favorites);
                         } else {
                             response = new Response(ResponseStatus.ERROR, "No car requests found", null);
                         }

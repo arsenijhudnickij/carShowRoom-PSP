@@ -155,13 +155,19 @@
          </children>
       </AnchorPane>
       <AnchorPane fx:id="viewCarsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-         <ScrollPane fx:id="carsScrollPaneView" fitToWidth="true" layoutX="20.0" layoutY="20.0" prefHeight="564.0" prefWidth="1255.0">
+         <ScrollPane fx:id="carsViewScrollPane" fitToWidth="true" layoutX="20.0" layoutY="75.0" prefHeight="509.0" prefWidth="1255.0">
             <content>
                <VBox fx:id="carsContainer" alignment="TOP_CENTER" prefHeight="447.0" prefWidth="1255.0" spacing="10.0">
                </VBox>
             </content>
          </ScrollPane>
-      </AnchorPane><AnchorPane fx:id="profilePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+         <Label fx:id="header" layoutX="506.0" layoutY="14.0" text="Наши автомобили">
+            <font>
+               <Font name="System Bold" size="31.0" />
+            </font>
+         </Label>
+      </AnchorPane>
+      <AnchorPane fx:id="profilePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
          <children>
             <AnchorPane fx:id="myprofilePanel" layoutX="354.0" layoutY="110.0" opacity="0.8" prefHeight="381.0" prefWidth="587.0" style="-fx-background-color: #282828;" visible="false">
                <children>

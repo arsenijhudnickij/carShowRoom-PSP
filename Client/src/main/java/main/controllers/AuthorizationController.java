@@ -51,7 +51,7 @@ public class AuthorizationController {
 
         signInButton.setOnAction(event -> handleSignIn());
     }
-
+    //sign in
     private void handleSignIn()
     {
         clearErrorLabels();
@@ -114,7 +114,7 @@ public class AuthorizationController {
                     Alert successAlert = new Alert(Alert.AlertType.INFORMATION);
                     successAlert.setTitle("Успешная авторизация");
                     successAlert.setHeaderText(null);
-                    successAlert.setContentText("Пользователь успешно авторизован!");
+                    successAlert.setContentText("Вы успешно авторизованы!");
                     successAlert.showAndWait();
                     switch (roleId) {
                         case 1:
@@ -142,36 +142,7 @@ public class AuthorizationController {
         }
     }
 
-    private String hashPassword(String password)
-    {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Ошибка при хешировании пароля", e);
-        }
-    }
-
-    private void clearErrorLabels()
-    {
-        loginLabel.setText("");
-        passwordLabel.setText("");
-        repPassLabel.setText("");
-    }
-
-    private void clearFields()
-    {
-        loginField.clear();
-        passwordField.clear();
-    }
-
+    //server
     private Object loginPerson(Person person)
     {
         Request request = new Request();
@@ -208,6 +179,7 @@ public class AuthorizationController {
         return null;
     }
 
+    //open windows
     private void openWindow(String fxmlFile, String windowTitle)
     {
         try {
@@ -217,7 +189,6 @@ public class AuthorizationController {
             System.out.println("Не удалось загрузить файл " + fxmlFile);
         }
     }
-
     private void openRegistrationWindow()
     {
         try {
@@ -225,6 +196,37 @@ public class AuthorizationController {
         } catch (IOException e) {
             e.printStackTrace();
             System.out.println("Не удалось загрузить файл registration.fxml");
+        }
+    }
+
+    //clear
+    private void clearErrorLabels()
+    {
+        loginLabel.setText("");
+        passwordLabel.setText("");
+        repPassLabel.setText("");
+    }
+    private void clearFields()
+    {
+        loginField.clear();
+        passwordField.clear();
+    }
+
+    //hash
+    private String hashPassword(String password)
+    {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Ошибка при хешировании пароля", e);
         }
     }
 }

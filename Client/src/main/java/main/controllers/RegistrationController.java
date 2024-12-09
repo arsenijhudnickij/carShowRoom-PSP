@@ -26,11 +26,11 @@ public class RegistrationController {
     @FXML
     private TextField passportNumField;
     @FXML
-    private DatePicker dateField;
-    @FXML
     private TextField loginField;
     @FXML
     private TextField gmailField;
+    @FXML
+    private DatePicker dateField;
     @FXML
     private Label gmailLabel;
     @FXML
@@ -63,6 +63,7 @@ public class RegistrationController {
         signUpButton.setOnAction(event -> validateUser());
     }
 
+    //validation
     private void validateUser()
     {
         clearErrorLabels();
@@ -224,31 +225,6 @@ public class RegistrationController {
         String emailRegex = "^[\\w.-]+@[\\w.-]+\\.[a-zA-Z]{2,}$";
         return email.matches(emailRegex);
     }
-
-    public static boolean validateSymbolNumber(String str) {
-        return str.length() >= 8 && str.length() <= 16;
-    }
-    public static boolean validateNoRussianLetters(String str) {
-        return !str.matches(".*[а-яА-Я].*");
-    }
-    private void clearFields()
-    {
-        FIOField.clear();
-        passportNumField.clear();
-        dateField.setValue(null);
-        loginField.clear();
-        passwordField.clear();
-        seсondPassField.clear();
-    }
-    private void clearErrorLabels()
-    {
-        FIOLabel.setText("");
-        passportLabel.setText("");
-        dateLabel.setText("");
-        loginLabel.setText("");
-        passwordLabel.setText("");
-        repPassLabel.setText("");
-    }
     private boolean validateFIO(String fio)
     {
         String[] parts = fio.split(" ");
@@ -262,9 +238,17 @@ public class RegistrationController {
         }
         return true;
     }
+    public static boolean validateSymbolNumber(String str) {
+        return str.length() >= 8 && str.length() <= 16;
+    }
+    public static boolean validateNoRussianLetters(String str) {
+        return !str.matches(".*[а-яА-Я].*");
+    }
     private boolean validatePassportNum(String passportNum) {
         return passportNum.matches("[A-Z]{2}\\d{6}");
     }
+
+    //open window
     private void openAuthorizationWindow()
     {
         try {
@@ -275,6 +259,8 @@ public class RegistrationController {
         }
         System.out.println("switch to authorization");
     }
+
+    //server
     private int checkPersonExists(Person person)
     {
         Request request = new Request();
@@ -316,22 +302,6 @@ public class RegistrationController {
         }
         return -1;
     }
-    private String hashPassword(String password)
-    {
-        try {
-            MessageDigest digest = MessageDigest.getInstance("SHA-256");
-            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
-            StringBuilder hexString = new StringBuilder();
-            for (byte b : hash) {
-                String hex = Integer.toHexString(0xff & b);
-                if (hex.length() == 1) hexString.append('0');
-                hexString.append(hex);
-            }
-            return hexString.toString();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException("Ошибка при хешировании пароля", e);
-        }
-    }
     private User sendUserToServer(User user)
     {
         Request request = new Request();
@@ -356,4 +326,43 @@ public class RegistrationController {
         }
         return null;
     }
+
+    //hash
+    private String hashPassword(String password)
+    {
+        try {
+            MessageDigest digest = MessageDigest.getInstance("SHA-256");
+            byte[] hash = digest.digest(password.getBytes(StandardCharsets.UTF_8));
+            StringBuilder hexString = new StringBuilder();
+            for (byte b : hash) {
+                String hex = Integer.toHexString(0xff & b);
+                if (hex.length() == 1) hexString.append('0');
+                hexString.append(hex);
+            }
+            return hexString.toString();
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException("Ошибка при хешировании пароля", e);
+        }
+    }
+
+    //clearing
+    private void clearFields()
+    {
+        FIOField.clear();
+        passportNumField.clear();
+        dateField.setValue(null);
+        loginField.clear();
+        passwordField.clear();
+        seсondPassField.clear();
+    }
+    private void clearErrorLabels()
+    {
+        FIOLabel.setText("");
+        passportLabel.setText("");
+        dateLabel.setText("");
+        loginLabel.setText("");
+        passwordLabel.setText("");
+        repPassLabel.setText("");
+    }
+
 }

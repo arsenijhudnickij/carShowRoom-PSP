@@ -68,15 +68,27 @@
         </AnchorPane>
         <AnchorPane layoutY="90.0" prefHeight="651.0" prefWidth="90.0" style="-fx-background-color: #282828;">
             <children>
-                <HBox fx:id="favoriteCheck" layoutX="8.0" layoutY="107.0" prefHeight="75.0" prefWidth="75.0" style="-fx-cursor: HAND;" />
-
-                <HBox fx:id="checkTestDrives" layoutX="6.0" layoutY="419.0" prefHeight="69.0" prefWidth="79.0" visible="false" />
-                <Label layoutX="11.0" layoutY="182.0" text="избранное" textFill="WHITE">
+                <HBox fx:id="favoriteCheck" layoutX="11.0" layoutY="117.0" prefHeight="75.0" prefWidth="78.0" style="-fx-cursor: HAND;">
+               <children>
+                  <ImageView fitHeight="69.0" fitWidth="79.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../com/izbr.png" />
+                     </image>
+                  </ImageView>
+               </children></HBox>
+                <Label layoutX="11.0" layoutY="192.0" text="избранное" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="13.0" />
                     </font>
                 </Label>
-                <HBox fx:id="myRequests" layoutX="4.0" layoutY="251.0" prefHeight="75.0" prefWidth="83.0" />
+                <HBox fx:id="myRequests" layoutX="16.0" layoutY="261.0" prefHeight="75.0" prefWidth="57.0">
+               <children>
+                  <ImageView fitHeight="127.0" fitWidth="69.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../com/request.png" />
+                     </image>
+                  </ImageView>
+               </children></HBox>
                 <Label layoutX="32.0" layoutY="336.0" text="мои" textFill="WHITE">
                     <font>
                         <Font name="System Bold" size="13.0" />
@@ -87,18 +99,26 @@
                         <Font name="System Bold" size="13.0" />
                     </font>
                 </Label>
-            <Label layoutX="5.0" layoutY="516.0" text="тест-драйвы" textFill="WHITE">
+            <Label layoutX="5.0" layoutY="507.0" text="тест-драйвы" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
-            <Label layoutX="32.0" layoutY="497.0" text="мои" textFill="WHITE">
+            <Label layoutX="32.0" layoutY="488.0" text="мои" textFill="WHITE">
                <font>
                   <Font name="System Bold" size="13.0" />
                </font>
             </Label>
+            <HBox fx:id="checkMyTestDrives" layoutX="4.0" layoutY="430.0" prefHeight="67.0" prefWidth="83.0">
+               <children>
+                  <ImageView fitHeight="52.0" fitWidth="80.0" pickOnBounds="true" preserveRatio="true">
+                     <image>
+                        <Image url="@../com/testDrive.png" />
+                     </image>
+                  </ImageView>
+               </children></HBox>
             </children></AnchorPane>
-        <AnchorPane fx:id="startPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" style="-fx-background-color: #FFFFFF;" stylesheets="@style.css" visible="false">
+        <AnchorPane fx:id="startPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" style="-fx-background-color: #FFFFFF;" stylesheets="@style.css">
             <children>
                 <Label alignment="CENTER" layoutX="50.0" layoutY="14.0" prefWidth="1195.0" styleClass="header" text="Добро пожаловать в панель пользователя" textFill="#000000" />
                 <Label layoutX="50.0" layoutY="102.0" styleClass="paragraph" text="Эта панель позволяет вам управлять всеми аспектами системы. Администраторская панель является важным инструментом, так как она обеспечивает полный контроль над данными системы, упрощает управление процессами и ускоряет принятие решений." textFill="#000000" wrapText="true" />
@@ -227,15 +247,19 @@
                 </AnchorPane>
             </children></AnchorPane>
         <AnchorPane fx:id="viewCarsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-            <ScrollPane fx:id="carsScrollPane" layoutX="20.0" layoutY="20.0" prefHeight="564.0" prefWidth="1255.0" fitToWidth="true">
+            <ScrollPane fx:id="carsScrollPane" fitToWidth="true" layoutX="20.0" layoutY="75.0" prefHeight="509.0" prefWidth="1255.0">
                 <content>
                     <VBox fx:id="carsContainer" alignment="TOP_CENTER" prefHeight="447.0" prefWidth="1255.0" spacing="10.0">
                     </VBox>
                 </content>
             </ScrollPane>
+             <Label fx:id="header" layoutX="506.0" layoutY="14.0" text="Наши автомобили">
+                <font>
+                   <Font name="System Bold" size="31.0" />
+                </font>
+             </Label>
         </AnchorPane>
-
-
+        
         <AnchorPane fx:id="profilePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
             <children>
                 <AnchorPane fx:id="myprofilePanel" layoutX="354.0" layoutY="110.0" opacity="0.8" prefHeight="396.0" prefWidth="587.0" style="-fx-background-color: #282828;">
@@ -310,15 +334,43 @@
             </children>
         </AnchorPane>
         <AnchorPane fx:id="checkRequestsPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-            <ScrollPane fx:id="requestsScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
-
+            <ScrollPane fx:id="requestsScrollPane" fitToWidth="true" layoutX="20.0" layoutY="75.0" prefHeight="509.0" prefWidth="1255.0">
+                <content>
+                    <VBox fx:id="requestsContainer" alignment="TOP_CENTER" prefHeight="447.0" prefWidth="1255.0" spacing="10.0">
+                    </VBox>
+                </content>
             </ScrollPane>
+         <Label layoutX="560.0" layoutY="14.0" text="Мои заявки">
+            <font>
+               <Font name="System Bold" size="30.0" />
+            </font>
+         </Label>
         </AnchorPane>
-        <AnchorPane fx:id="signUpToTestDrivePanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" />
-        <AnchorPane fx:id="favoritesPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
-            <ScrollPane fx:id="favoritesScrollPane" hbarPolicy="NEVER" layoutX="20.0" layoutY="20.0" prefHeight="449.0" prefWidth="1255.0">
-
+        <AnchorPane fx:id="checkMyTestDrivesPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+            <ScrollPane fx:id="testDrivesScrollPane" fitToWidth="true" layoutX="20.0" layoutY="75.0" prefHeight="509.0" prefWidth="1255.0">
+                <content>
+                    <VBox fx:id="testDrivesContainer" alignment="TOP_CENTER" prefHeight="503.0" prefWidth="1253.0" spacing="10.0">
+                    </VBox>
+                </content>
             </ScrollPane>
+             <Label layoutX="518.0" layoutY="21.0" text="Мои тест-драйвы">
+                <font>
+                   <Font name="System Bold" size="30.0" />
+                </font>
+             </Label>
+        </AnchorPane>
+        <AnchorPane fx:id="favoritesPanel" layoutX="90.0" layoutY="90.0" prefHeight="651.0" prefWidth="1295.0" visible="false">
+            <ScrollPane fx:id="favoritesScrollPane" fitToWidth="true" layoutX="20.0" layoutY="75.0" prefHeight="509.0" prefWidth="1255.0">
+                <content>
+                    <VBox fx:id="favoritesContainer" alignment="TOP_CENTER" prefHeight="503.0" prefWidth="1253.0" spacing="10.0">
+                    </VBox>
+                </content>
+            </ScrollPane>
+            <Label layoutX="518.0" layoutY="21.0" text="Мои избранные">
+                <font>
+                    <Font name="System Bold" size="30.0" />
+                </font>
+            </Label>
         </AnchorPane>
     </children>
 </AnchorPane>
