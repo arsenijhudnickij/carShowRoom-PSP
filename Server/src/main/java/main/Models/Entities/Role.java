@@ -2,6 +2,8 @@ package main.Models.Entities;
 
 import main.Enums.RoleName;
 import javax.persistence.*;
+import java.io.Serializable;
+
 @Entity
 @Table(name = "role")
 public class Role {

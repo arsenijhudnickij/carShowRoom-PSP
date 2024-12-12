@@ -173,17 +173,6 @@ public class AdminPageController {
     public void initialize()
     {
         checkCar.setOnAction(event -> handleCarSelection());
-        checkCar.setButtonCell(new ListCell<>() {
-            @Override
-            protected void updateItem(String item, boolean empty) {
-                super.updateItem(item, empty);
-                if (item == null || empty) {
-                    setText(profile.getPromptText());
-                } else {
-                    setText(item);
-                }
-            }
-        });
 
         setButtonCellForComboBox(profile);
         setButtonCellForComboBox(petrolType);

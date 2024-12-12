@@ -3,6 +3,7 @@ package main.Models.Entities;
 import main.Enums.RequestCarStatus;
 
 import javax.persistence.*;
+import java.io.Serializable;
 
 @Entity
 @Table(name = "car_requests")

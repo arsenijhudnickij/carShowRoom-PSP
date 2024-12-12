@@ -198,7 +198,7 @@ public class WorkerPageController {
             protected void updateItem(String item, boolean empty) {
                 super.updateItem(item, empty);
                 if (item == null || empty) {
-                    setText(profile.getPromptText());
+                    setText(checkCar.getPromptText());
                 } else {
                     setText(item);
                 }
@@ -689,7 +689,7 @@ public class WorkerPageController {
                     writer.newLine();
                     writer.write("Название машины: " + car.getName());
                     writer.newLine();
-                    writer.write("Тип машины: " + car.getCarType());
+                    writer.write("Тип машины: " + car.getCarType().getTypeName());
                     writer.newLine();
                     writer.write("Цена машины: " + car.getCost());
                     writer.newLine();
@@ -951,18 +951,18 @@ public class WorkerPageController {
         List<Car> carsCopy = new ArrayList<>(cars);
         if ("Просмотр всех автомобилей".equals(selectedOption)) {
             header.setText("Наши автомобили");
-            header.setTranslateX(40);
+            header.setTranslateX(10);
             displayCars(cars);
         } else if ("От самого дешевого к самому дорогому".equals(selectedOption)) {
             carsCopy.sort((car1, car2) -> Double.compare(car1.getCost(), car2.getCost()));
             header.setText("От самого дешевого к самому дорогому");
-            header.setTranslateX(-40);
+            header.setTranslateX(-125);
             displayCars(carsCopy);
         } else if ("От самого дорогого к самому дешевому".equals(selectedOption)) {
             carsCopy.sort((car1, car2) -> Double.compare(car2.getCost(), car1.getCost()));
             displayCars(carsCopy);
             header.setText("От самого дорогого к самому дешевому");
-            header.setTranslateX(-40);
+            header.setTranslateX(-125);
         }
         checkCar.setValue(null);
     }

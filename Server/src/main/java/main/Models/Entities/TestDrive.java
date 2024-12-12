@@ -3,6 +3,7 @@ package main.Models.Entities;
 import main.Enums.TestDriveStatus;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 

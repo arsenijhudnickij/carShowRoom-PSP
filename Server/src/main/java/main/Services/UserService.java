@@ -10,7 +10,7 @@ import org.hibernate.HibernateError;
 import java.util.List;
 
 public class UserService implements Service {
-    UserDAO userDAO = new UserDAO();
+    public UserDAO userDAO = new UserDAO();
     @Override
     public Object findEntity(int id) {
         User user = null;

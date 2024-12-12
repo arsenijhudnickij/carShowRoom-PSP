@@ -192,18 +192,18 @@ public class UserPageController {
         List<Car> carsCopy = new ArrayList<>(cars);
         if ("Просмотр всех автомобилей".equals(selectedOption)) {
             header.setText("Наши автомобили");
-            header.setTranslateX(40);
+            header.setTranslateX(50);
             displayCars(cars);
         } else if ("От самого дешевого к самому дорогому".equals(selectedOption)) {
             carsCopy.sort((car1, car2) -> Double.compare(car1.getCost(), car2.getCost()));
             header.setText("От самого дешевого к самому дорогому");
-            header.setTranslateX(-40);
+            header.setTranslateX(-50);
             displayCars(carsCopy);
         } else if ("От самого дорогого к самому дешевому".equals(selectedOption)) {
             carsCopy.sort((car1, car2) -> Double.compare(car2.getCost(), car1.getCost()));
             displayCars(carsCopy);
             header.setText("От самого дорогого к самому дешевому");
-            header.setTranslateX(-40);
+            header.setTranslateX(-50);
         }
         checkCar.setValue(null);
     }
@@ -1105,6 +1105,4 @@ public class UserPageController {
     {
         button.setStyle("-fx-background-color: white; -fx-text-fill: black; -fx-font-weight: bold; -fx-font-size: 13px; -fx-padding: 5 10;");
     }
-
-
 }

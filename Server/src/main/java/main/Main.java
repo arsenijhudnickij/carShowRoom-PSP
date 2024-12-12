@@ -10,6 +10,7 @@ import java.io.IOException;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
 public class Main {
@@ -18,23 +19,25 @@ public class Main {
     private static ClientThread clientHandler;
     private static Thread thread;
     private static List<Socket> currentSockets = new ArrayList<Socket>();
+
     public static void main(String[] args) throws IOException {
-
-
         serverSocket = new ServerSocket(PORT_NUMBER);
-        while(true) {
-            for(Socket socket : currentSockets) {
-                if(socket.isClosed()){
-                    currentSockets.remove(socket);
+        while (true) {
+
+            Iterator<Socket> iterator = currentSockets.iterator();
+            while (iterator.hasNext()) {
+                Socket socket = iterator.next();
+                if (socket.isClosed()) {
                     continue;
                 }
-                String socketInfo = "Client: " + socket.getInetAddress()+":"+socket.getPort();
+                String socketInfo = "Client: " + socket.getInetAddress() + ":" + socket.getPort();
                 System.out.println(socketInfo);
             }
+
             Socket socket = serverSocket.accept();
             currentSockets.add(socket);
-            clientHandler=new ClientThread(socket);
-            thread= new Thread(clientHandler);
+            clientHandler = new ClientThread(socket);
+            thread = new Thread(clientHandler);
             thread.start();
             System.out.flush();
         }
